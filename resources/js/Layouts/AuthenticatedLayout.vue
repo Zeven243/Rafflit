@@ -48,6 +48,13 @@ const showingNavigationDropdown = ref(false);
                     <span class="inline-flex rounded-md">
                       <button type="button"
                         class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-white bg-opacity-20 hover:bg-opacity-30 focus:outline-none transition ease-in-out duration-150">
+                        <div class="relative mr-2">
+                          <img
+                            :src="$page.props.auth.user.profile_picture ? `/storage/${$page.props.auth.user.profile_picture}` : '/storage/default-profile-picture.png'"
+                            alt="Profile Picture"
+                            class="w-10 h-10 rounded-full"
+                          />
+                        </div>
                         {{ $page.props.auth.user.name }}
                         <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                           fill="currentColor">
@@ -119,4 +126,5 @@ const showingNavigationDropdown = ref(false);
       <slot />
     </main>
   </div>
-</div></template>
+</div>
+</template>

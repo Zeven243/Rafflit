@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
@@ -29,26 +31,38 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|confirmed|min:8',
+            'profile_picture' => 'nullable|image|max:2048',
         ]);
-
+    
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
+    
+        if ($request->hasFile('profile_picture')) {
+            $profilePicture = $request->file('profile_picture');
+            $filename = time() . '_' . $profilePicture->getClientOriginalName();
+            $path = $profilePicture->storeAs('profile_pictures', $filename, 'public');
+            $user->profile_picture = $path;
+            $user->save();
+        }
+    
         event(new Registered($user));
-
+    
         Auth::login($user);
-
+    
         return redirect(RouteServiceProvider::HOME);
     }
+    
+    
+
 }
