@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [ListingsController::class, 'getRaffleEntries'])->name('dashboard');
     Route::get('/raffle-entries', [ListingsController::class, 'showRaffleEntries'])->name('raffle-entries.index');
 
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
+    Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
+
 
 });
 

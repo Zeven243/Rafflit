@@ -20,7 +20,7 @@ const showingNavigationDropdown = ref(false);
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
                 <Link :href="route('dashboard')">
-                <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
+                  <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
                 </Link>
               </div>
               <!-- Navigation Links -->
@@ -38,6 +38,14 @@ const showingNavigationDropdown = ref(false);
                 <NavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
                   My Raffle Entries
                 </NavLink>
+                <!-- New NavLink for My Wallet -->
+                <NavLink :href="route('wallet')" :active="route().current('wallet')">
+                  My Wallet
+                </NavLink>
+              </div>
+              <!-- Placeholder for Wallet Balance -->
+              <div class="flex items-center ml-4">
+                <span class="text-white font-medium">Balance: TBD</span>
               </div>
             </div>
             <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -123,8 +131,8 @@ const showingNavigationDropdown = ref(false);
       </header>
       <!-- Page Content -->
       <main>
-      <slot />
-    </main>
+        <slot />
+      </main>
+    </div>
   </div>
-</div>
 </template>
