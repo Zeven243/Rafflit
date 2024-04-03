@@ -2,41 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class WalletController extends Controller
 {
-    /**
-     * Display the user's wallet.
-     */
-    public function index()
+    // Display the user's wallet
+    public function index(Request $request)
     {
-        $wallet = Wallet::firstOrCreate(
-            ['user_id' => Auth::id()],
-            ['balance' => 0.00]
-        );
+        $user = $request->user();
+        $wallet = $user->wallet()->firstOrCreate([
+            'user_id' => $user->id,
+        ]);
 
-        return Inertia::render('Wallet/Index', [
-            'balance' => $wallet->balance,
+        return Inertia::render('Wallet/index', [
+            'wallet' => $wallet,
         ]);
     }
 
-    /**
-     * Update the user's wallet balance.
-     */
+    // Update the wallet balance
     public function update(Request $request)
     {
         $request->validate([
-            'balance' => 'required|numeric',
+            'balance' => 'required|numeric|min:0',
         ]);
 
-        $wallet = Wallet::where('user_id', Auth::id())->firstOrFail();
-        $wallet->balance = $request->balance;
-        $wallet->save();
+        $user = $request->user();
+        $wallet = $user->wallet()->firstOrCreate([
+            'user_id' => $user->id,
+        ]);
 
-        return redirect()->back()->with('success', 'Wallet balance updated successfully.');
+        $wallet->update([
+            'balance' => $request->balance,
+        ]);
+
+        return redirect()->back()->with('success', 'Wallet updated successfully.');
     }
 }

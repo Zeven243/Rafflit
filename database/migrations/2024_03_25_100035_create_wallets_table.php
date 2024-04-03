@@ -1,8 +1,10 @@
+<?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWalletsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -12,7 +14,7 @@ class CreateWalletsTable extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('balance', 10, 2)->default(0.00);
+            $table->decimal('balance', 8, 2)->default(0);
             $table->timestamps();
         });
     }
@@ -20,8 +22,8 @@ class CreateWalletsTable extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('wallets');
     }
-}
+};
