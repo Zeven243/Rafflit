@@ -34,18 +34,12 @@ const showingNavigationDropdown = ref(false);
                 <NavLink :href="route('listings.create')" :active="route().current('listings.create')">
                   Create a Listing
                 </NavLink>
-                <!-- New NavLink for Raffle Entries -->
                 <NavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
                   My Raffle Entries
                 </NavLink>
-                <!-- New NavLink for My Wallet -->
                 <NavLink :href="route('wallet')" :active="route().current('wallet')">
                   My Wallet
                 </NavLink>
-              </div>
-              <!-- Placeholder for Wallet Balance -->
-              <div class="flex items-center ml-4">
-                <span class="text-white font-medium">Balance: TBD</span>
               </div>
             </div>
             <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -59,9 +53,7 @@ const showingNavigationDropdown = ref(false);
                         <div class="relative mr-2">
                           <img
                             :src="$page.props.auth.user.profile_picture ? `/storage/${$page.props.auth.user.profile_picture}` : '/storage/default-profile-picture.png'"
-                            alt="Profile Picture"
-                            class="w-10 h-10 rounded-full"
-                          />
+                            alt="Profile Picture" class="w-10 h-10 rounded-full" />
                         </div>
                         {{ $page.props.auth.user.name }}
                         <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -76,6 +68,9 @@ const showingNavigationDropdown = ref(false);
                   <template #content>
                     <DropdownLink :href="route('profile.edit')">
                       Profile
+                    </DropdownLink>
+                    <DropdownLink :href="route('user-management.index')">
+                      User Management
                     </DropdownLink>
                     <DropdownLink :href="route('logout')" method="post" as="button">
                       Log Out
@@ -104,7 +99,18 @@ const showingNavigationDropdown = ref(false);
             <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
               Dashboard
             </ResponsiveNavLink>
-            <!-- Add other responsive links here -->
+            <ResponsiveNavLink :href="route('listings.index')" :active="route().current('listings.index')">
+              My Listings
+            </ResponsiveNavLink>
+            <ResponsiveNavLink :href="route('listings.create')" :active="route().current('listings.create')">
+              Create a Listing
+            </ResponsiveNavLink>
+            <ResponsiveNavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
+              My Raffle Entries
+            </ResponsiveNavLink>
+            <ResponsiveNavLink :href="route('wallet')" :active="route().current('wallet')">
+              My Wallet
+            </ResponsiveNavLink>
           </div>
           <!-- Responsive Settings Options -->
           <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">

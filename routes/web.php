@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListingsController;
+use App\Http\Controllers\UserManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('listings' , ListingsController::class);
+    Route::resource('user-management', UserManagementController::class);
+
     Route::post('/listings/{listing}/raffle-entry', [ListingsController::class, 'storeRaffleEntry'])->name('listings.raffle-entry.store');
     Route::get('/raffle-entries', [ListingsController::class, 'getRaffleEntries'])->name('raffle-entries.index');
     Route::get('/dashboard', [ListingsController::class, 'getRaffleEntries'])->name('dashboard');
@@ -46,6 +49,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
     Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
+
+    
 
 
 });
