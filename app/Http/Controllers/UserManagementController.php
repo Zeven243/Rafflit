@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Role;
+use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class UserManagementController extends Controller
 {
@@ -15,13 +16,18 @@ class UserManagementController extends Controller
      */
     public function index(): Response
     {
-        // Fetch all users with their roles. Consider using pagination for large datasets.
-        $users = User::with('roles')->get();
+        $users = User::with('roles')->get()->map(function ($user) {
+            $user->selected_role = $user->roles->first() ? $user->roles->first()->id : null;
+            return $user;
+        });
+        $roles = Role::all();
     
         return Inertia::render('UserManagement/index', [
             'users' => $users,
+            'roles' => $roles,
         ]);
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -79,24 +85,43 @@ class UserManagementController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            // Add other validation rules as needed
+            'role_id' => 'required|exists:roles,id', // Ensure 'role_id' is validated
         ]);
-
+    
         // Update the user
         $user->update($validated);
-
+    
+        // Update the user's role in the pivot table
+        $user->roles()->sync([$request->role_id]); // Use 'sync' to update the role
+    
         // Redirect to the user management index with a success message
         return redirect()->route('user-management.index')->with('success', 'User updated successfully.');
     }
-
+    
+    
+    
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user): RedirectResponse
     {
         $user->delete();
-
-        // Redirect to the user management index with a success message
-        return redirect()->route('user-management.index')->with('success', 'User deleted successfully.');
+    
+        // Use a 303 response code for the redirect to ensure compatibility with Inertia.js
+        return redirect()->route('user-management.index')->with('success', 'User deleted successfully.')->setStatusCode(303);
     }
+
+    public function updateRole(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+    
+        // Update the user's role in the pivot table
+        $user->roles()->sync([$validated['role_id']]);
+    
+        return redirect()->route('user-management.index')->with('success', 'User role updated successfully.');
+    }
+
 }

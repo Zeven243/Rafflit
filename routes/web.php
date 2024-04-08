@@ -8,17 +8,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListingsController;
 use App\Http\Controllers\UserManagementController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -28,31 +17,35 @@ Route::get('/', function () {
     ]);
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    // Routes accessible by Standard users
+    Route::middleware(['checkRole:Standard User,Administrator,Developer-Master'])->group(function () {
+        Route::resource('listings', ListingsController::class)->only(['create', 'store', 'edit', 'update', 'destroy', 'index', 'show']);
+        Route::post('/listings/{listing}/raffle-entry', [ListingsController::class, 'storeRaffleEntry'])->name('listings.raffle-entry.store');
+        Route::get('/raffle-entries', [ListingsController::class, 'getRaffleEntries'])->name('raffle-entries.index');
+        Route::get('/dashboard', [ListingsController::class, 'getRaffleEntries'])->name('dashboard');
+        Route::get('/raffle-entries', [ListingsController::class, 'showRaffleEntries'])->name('raffle-entries.index');
+        Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
+        Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
+    });
 
+    // Routes accessible by Administrator and Developer-Master
+    Route::middleware(['checkRole:Administrator,Developer-Master'])->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::resource('listings' , ListingsController::class);
-    Route::resource('user-management', UserManagementController::class);
-
-    Route::post('/listings/{listing}/raffle-entry', [ListingsController::class, 'storeRaffleEntry'])->name('listings.raffle-entry.store');
-    Route::get('/raffle-entries', [ListingsController::class, 'getRaffleEntries'])->name('raffle-entries.index');
-    Route::get('/dashboard', [ListingsController::class, 'getRaffleEntries'])->name('dashboard');
-    Route::get('/raffle-entries', [ListingsController::class, 'showRaffleEntries'])->name('raffle-entries.index');
-
-    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
-    Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
-
-    
-
-
+    // Routes exclusively for Developer-Master
+    Route::middleware(['checkRole:Developer-Master'])->group(function () {
+        Route::resource('user-management', UserManagementController::class);
+        Route::put('/user-management/{user}/updateRole', [UserManagementController::class, 'updateRole'])->name('user-management.updateRole');
+        Route::delete('/user-management/{user}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';
