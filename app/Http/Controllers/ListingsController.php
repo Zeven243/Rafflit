@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use App\Models\RaffleEntry;
-
-
-
-
+use Spatie\Activitylog\Models\Activity;
 
 class ListingsController extends Controller
 {
@@ -44,7 +41,6 @@ class ListingsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         $request->validate([
@@ -73,18 +69,23 @@ class ListingsController extends Controller
         }
     
         $imagePath = 'storage/listings/' . $filename;
-        Listings::create([
+        $listing = Listings::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            'amount_of_tickets' => $request->amount_of_tickets, // Store the new field
+            'amount_of_tickets' => $request->amount_of_tickets,
             'user_id' => auth()->user()->id,
-            'image' => url($imagePath), // Store the full image path
+            'image' => url($imagePath),
         ]);
     
+        // Log the listing creation activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($listing)
+            ->log('created');
+
         return redirect()->route('listings.index')->with('success', 'Listing created successfully.');
     }
-    
 
     /**
      * Display the specified resource.
@@ -92,11 +93,9 @@ class ListingsController extends Controller
     public function show(Listings $listing)
     {
         return Inertia::render('Listings/show', [
-            'listing' => $listing->toArray(), // Make sure the image path is included in the listing details
+            'listing' => $listing->toArray(),
         ]);
     }
-    
-    
 
     /**
      * Show the form for editing the specified resource.
@@ -117,18 +116,19 @@ class ListingsController extends Controller
             'name' => 'required|max:255',
             'description' => 'required|max:255',
             'price' => 'required',
-            // 'image' => 'image', // Include this if you allow updating the image
         ]);
-
-        // If you allow updating the image, you should handle the image upload here
-        // similar to the store method and update the 'image' attribute accordingly.
 
         $listing->update([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            // 'image' => $newImagePath, // Update this if you're handling image upload
         ]);
+
+        // Log the listing update activity
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($listing)
+            ->log('updated');
 
         return redirect()->route('listings.index')->with('success', 'Listing updated successfully.');
     }
@@ -138,12 +138,16 @@ class ListingsController extends Controller
      */
     public function destroy(Listings $listing)
     {
-        // If you store images, you may want to delete the image file as well
         if ($listing->image) {
             Storage::delete($listing->image);
         }
 
         $listing->delete();
+
+        // Log the listing deletion activity
+        activity()
+            ->causedBy(auth()->user())
+            ->log('deleted listing');
 
         return redirect()->route('listings.index')->with('success', 'Listing deleted successfully.');
     }
@@ -151,41 +155,40 @@ class ListingsController extends Controller
     /**
      * Store a raffle entry for the specified listing.
      */
-
-    // Inside ListingsController.php
     public function storeRaffleEntry(Request $request, $listingId)
     {
         $user = auth()->user();
         $listing = Listings::findOrFail($listingId);
     
-        // Create a new raffle entry for the user and listing
-        RaffleEntry::create([
+        $raffleEntry = RaffleEntry::create([
             'user_id' => $user->id,
             'listing_id' => $listingId,
         ]);
     
-    // Increment the tickets_sold value
-    $listing->increment('tickets_sold');
+        $listing->increment('tickets_sold');
 
-    // Check if the raffle is full and select a winner
-    if ($listing->tickets_sold >= $listing->amount_of_tickets) {
-        $this->selectWinner($listingId);
-    }
+        if ($listing->tickets_sold >= $listing->amount_of_tickets) {
+            $this->selectWinner($listingId);
+        }
     
-        // Return a response, possibly redirecting to the dashboard or returning JSON data
+        // Log the raffle entry activity
+        activity()
+            ->causedBy($user)
+            ->performedOn($raffleEntry)
+            ->log('entered raffle');
+
         return redirect()->route('dashboard')->with('success', 'Entered raffle successfully.');
     }
 
     public function getRaffleEntries()
     {
         $user = auth()->user();
-        // Eager load the 'listing' relationship with each raffle entry
         $raffleEntries = $user->raffleEntries()->with('listing')->get();
-        $allListings = Listings::all(); // Retrieve all listings
+        $allListings = Listings::all();
     
         return Inertia::render('Dashboard', [
             'raffleEntries' => $raffleEntries,
-            'allListings' => $allListings, // Pass all listings to the view
+            'allListings' => $allListings,
         ]);
     }
 
@@ -203,26 +206,27 @@ class ListingsController extends Controller
     {
         $listing = Listings::with('raffleEntries')->findOrFail($listingId);
     
-        // Check if the raffle is full
         if ($listing->tickets_sold >= $listing->amount_of_tickets) {
-            // Randomly select a winner
             $winnerEntry = $listing->raffleEntries->random();
     
-            // Update the listing with the winner's user ID and set is_active to false
             $listing->winner_user_id = $winnerEntry->user_id;
             $listing->is_active = false;
             $listing->save();
     
-            // Notify all users about the result
             foreach ($listing->raffleEntries as $entry) {
                 // Send notification to each user (implement notification logic)
             }
     
-            return $winnerEntry->user_id; // Return the winner's user ID
+            // Log the winner selection activity
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($listing)
+                ->withProperties(['winner_id' => $winnerEntry->user_id])
+                ->log('selected winner');
+
+            return $winnerEntry->user_id;
         }
     
-        return null; // No winner if the raffle is not full
+        return null;
     }
-
-    
 }

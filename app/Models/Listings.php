@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
+
 
 class Listings extends Model
 {
     use HasFactory;
+    use LogsActivity;
+
+    protected static $logFillable = true;
+    protected static $logOnlyDirty = true;
 
     protected $fillable = [
         'name',
@@ -28,6 +35,14 @@ class Listings extends Model
     public function remainingTickets()
     {
         return $this->amount_of_tickets - $this->raffleEntries()->count();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'description', 'price'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
     
 }

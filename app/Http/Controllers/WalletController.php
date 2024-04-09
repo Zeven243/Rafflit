@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Activitylog\Models\Activity;
 
 class WalletController extends Controller
 {
@@ -16,6 +17,12 @@ class WalletController extends Controller
         $wallet = $user->wallet()->firstOrCreate([
             'user_id' => $user->id,
         ]);
+
+        // Log the wallet view activity
+        activity()
+            ->causedBy($user)
+            ->performedOn($wallet)
+            ->log('viewed wallet');
 
         return Inertia::render('Wallet/index', [
             'wallet' => $wallet,
@@ -34,9 +41,21 @@ class WalletController extends Controller
             'user_id' => $user->id,
         ]);
 
+        $oldBalance = $wallet->balance;
+
         $wallet->update([
             'balance' => $request->balance,
         ]);
+
+        // Log the wallet update activity
+        activity()
+            ->causedBy($user)
+            ->performedOn($wallet)
+            ->withProperties([
+                'old_balance' => $oldBalance,
+                'new_balance' => $request->balance,
+            ])
+            ->log('updated wallet balance');
 
         return redirect()->back()->with('success', 'Wallet updated successfully.');
     }

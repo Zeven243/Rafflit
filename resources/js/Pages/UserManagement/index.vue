@@ -3,8 +3,15 @@
     <div class="bg-white min-h-screen">
       <div class="max-w-6xl mx-auto py-10">
         <h1 class="text-3xl font-bold mb-5">User Management</h1>
-        <div class="mb-5">
+        <div class="flex justify-between mb-5">
           <input type="text" v-model="search" placeholder="Search users..." class="p-2 border rounded">
+          <!-- Sub-navbar for administrative links -->
+          <div class="flex gap-4">
+            <Link :href="route('audit-systems.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">Audit Systems</Link>
+            <Link :href="route('user-logs.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">User Logs</Link>
+            <Link :href="route('system-settings.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">System Settings</Link>
+            <Link :href="route('role-management.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">Role Management</Link>
+          </div>
         </div>
         <div class="overflow-x-auto rounded-lg shadow overflow-y-auto relative">
           <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative">
@@ -63,6 +70,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
+import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
@@ -97,7 +105,7 @@ const updateRole = (user) => {
 
 const confirmDelete = (user) => {
   if (confirm(`Are you sure you want to delete ${user.first_name}?`)) {
-    Inertia.delete(route('profile.destroy', user.id), {
+    Inertia.delete(route('user-management.destroy', user.id), {
       onSuccess: () => {
         props.users = props.users.filter(u => u.id !== user.id);
       },

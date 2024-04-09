@@ -8,12 +8,18 @@ use App\Models\Wallet;
 use App\Models\RaffleEntry;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use LogsActivity;
+
+    protected static $logFillable = true;
+    protected static $logOnlyDirty = true;
 
     /**
      * The attributes that are mass assignable.
@@ -61,6 +67,14 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'password'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
     
 }

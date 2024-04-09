@@ -37,7 +37,7 @@ const showingNavigationDropdown = ref(false);
                 <NavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
                   My Raffle Entries
                 </NavLink>
-                <NavLink :href="route('wallet')" :active="route().current('wallet')">
+                <NavLink :href="route('wallet.index')" :active="route().current('wallet.index')">
                   My Wallet
                 </NavLink>
               </div>
@@ -108,7 +108,7 @@ const showingNavigationDropdown = ref(false);
             <ResponsiveNavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
               My Raffle Entries
             </ResponsiveNavLink>
-            <ResponsiveNavLink :href="route('wallet')" :active="route().current('wallet')">
+            <ResponsiveNavLink :href="route('wallet.index')" :active="route().current('wallet.index')">
               My Wallet
             </ResponsiveNavLink>
           </div>
