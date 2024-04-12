@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['checkRole:Standard User,Administrator,Developer-Master'])->group(function () {
         Route::resource('listings', ListingsController::class)->only(['create', 'store', 'edit', 'update', 'destroy', 'index', 'show']);
         Route::post('/listings/{listing}/raffle-entry', [ListingsController::class, 'storeRaffleEntry'])->name('listings.raffle-entry.store');
-        Route::get('/raffle-entries', [ListingsController::class, 'getRaffleEntries'])->name('raffle-entries.index');
+        Route::get('/raffle-entries', [ListingsController::class, 'showRaffleEntries'])->name('raffle-entries.index');
         Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
         Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
     });
