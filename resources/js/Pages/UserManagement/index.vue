@@ -8,8 +8,6 @@
           <!-- Sub-navbar for administrative links -->
           <div class="flex gap-4">
             <Link :href="route('audit-systems.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">Audit Systems</Link>
-            <Link :href="route('user-logs.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">User Logs</Link>
-            <Link :href="route('system-settings.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">System Settings</Link>
             <Link :href="route('role-management.index')" class="p-2 bg-blue-500 text-white rounded hover:bg-blue-700">Role Management</Link>
           </div>
         </div>

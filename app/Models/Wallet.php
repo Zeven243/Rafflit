@@ -9,21 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Wallet extends Model
 {
-    use HasFactory;
-    use LogsActivity;
+    use HasFactory, LogsActivity;
 
-    protected static $logFillable = true;
-    protected static $logOnlyDirty = true;
-
-    // Specify the attributes that are mass assignable
     protected $fillable = [
         'user_id',
         'balance'
     ];
 
-    /**
-     * Define the inverse one-to-one relationship with User.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -34,6 +26,7 @@ class Wallet extends Model
         return LogOptions::defaults()
             ->logOnly(['user_id', 'balance'])
             ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Wallet {$eventName}")
             ->dontSubmitEmptyLogs();
     }
 }

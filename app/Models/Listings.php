@@ -7,20 +7,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\LogOptions;
 
-
 class Listings extends Model
 {
-    use HasFactory;
-    use LogsActivity;
-
-    protected static $logFillable = true;
-    protected static $logOnlyDirty = true;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'name',
         'description',
         'price',
-        'amount_of_tickets', // New attribute
+        'amount_of_tickets',
         'user_id',
         'image',
         'winner_user_id',
@@ -28,7 +23,6 @@ class Listings extends Model
 
     public function raffleEntries()
     {
-        // The related model, the foreign key on the related model, and the local key
         return $this->hasMany(RaffleEntry::class, 'listing_id', 'id');
     }
 
@@ -40,13 +34,9 @@ class Listings extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'description', 'price'])
+            ->logOnly(['name', 'description', 'price', 'amount_of_tickets'])
             ->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Listing {$eventName}")
             ->dontSubmitEmptyLogs();
     }
-    
 }
-
-
-
-

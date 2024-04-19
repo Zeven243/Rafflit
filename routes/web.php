@@ -41,9 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Administrative routes
         Route::get('/audit-systems', [AuditSystemsController::class, 'index'])->name('audit-systems.index');
-        Route::get('/user-logs', [UserLogsController::class, 'index'])->name('user-logs.index');
-        Route::get('/system-settings', [SystemSettingsController::class, 'index'])->name('system-settings.index');
-        Route::get('/role-management', [RoleManagementController::class, 'index'])->name('role-management.index');
+        Route::resource('role-management', RoleManagementController::class);
     });
 
     // Routes exclusively for Developer-Master
