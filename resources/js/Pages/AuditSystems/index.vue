@@ -9,6 +9,14 @@
             <Link href="/user-management" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">Back to User Management</Link>
           </div>
         </div>
+        <div class="mb-4">
+          <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+          <input type="date" id="startDate" v-model="startDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+        <div class="mb-4">
+          <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+          <input type="date" id="endDate" v-model="endDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
             <thead class="bg-gray-50">
@@ -107,11 +115,22 @@ const selectedColumns = ref([
   'created_at',
 ]);
 
+const startDate = ref('');
+const endDate = ref('');
+
 const filteredAudits = computed(() => {
   return props.audits.data.filter((audit) => {
-    return selectedColumns.value.some((column) => {
+    const auditDate = new Date(audit.created_at);
+    const start = startDate.value ? new Date(startDate.value) : null;
+    const end = endDate.value ? new Date(endDate.value) : null;
+
+    const columnFilter = selectedColumns.value.some((column) => {
       return audit.hasOwnProperty(column);
     });
+
+    const dateFilter = (!start || auditDate >= start) && (!end || auditDate <= end);
+
+    return columnFilter && dateFilter;
   });
 });
 

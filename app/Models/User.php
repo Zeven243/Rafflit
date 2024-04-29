@@ -36,10 +36,10 @@ class User extends Authenticatable
         return $this->hasMany(RaffleEntry::class);
     }
 
-    public function wallet()
-    {
+    public function wallet() {
         return $this->hasOne(Wallet::class);
     }
+    
 
     public function roles()
     {

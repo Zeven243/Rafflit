@@ -6,11 +6,13 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListingsController;
-use App\Http\Controllers\UserManagementController;
-use App\Http\Controllers\AuditSystemsController;
 use App\Http\Controllers\UserLogsController;
-use App\Http\Controllers\SystemSettingsController;
+use App\Http\Controllers\AuditSystemsController;
 use App\Http\Controllers\RoleManagementController;
+use App\Http\Controllers\SystemSettingsController;
+use App\Http\Controllers\UserManagementController;
+
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -31,6 +33,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/raffle-entries', [ListingsController::class, 'showRaffleEntries'])->name('raffle-entries.index');
         Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
         Route::post('/wallet/update', [WalletController::class, 'update'])->name('wallet.update');
+        Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update-picture');
+
     });
 
     // Routes accessible by Administrator and Developer-Master
