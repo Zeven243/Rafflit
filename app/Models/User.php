@@ -36,14 +36,20 @@ class User extends Authenticatable
         return $this->hasMany(RaffleEntry::class);
     }
 
-    public function wallet() {
+    public function wallet()
+    {
         return $this->hasOne(Wallet::class);
     }
-    
 
     public function roles()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    // Define the one-to-many relationship with Listings
+    public function listings()
+    {
+        return $this->hasMany(Listings::class);
     }
 
     public function getActivitylogOptions(): LogOptions

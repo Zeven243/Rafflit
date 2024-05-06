@@ -39,4 +39,9 @@ class Listings extends Model
             ->setDescriptionForEvent(fn(string $eventName) => "Listing {$eventName}")
             ->dontSubmitEmptyLogs();
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -14,19 +14,20 @@ use Spatie\Activitylog\Models\Activity;
 
 class ListingsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {   
+    // Fetch all listings for the dashboard
+    public function index(Request $request)
+    {
         $listings = Listings::all();
-
-        Inertia::share('listings', $listings);
-
-        return Inertia::render('Listings/index', [
-            'listings' => $listings,
-        ]);
+        return Inertia::render('Dashboard', ['listings' => $listings]);
     }
+
+    // Fetch only user's listings for the My Listings page
+    public function userIndex(Request $request)
+    {
+        $userListings = $request->user()->listings; // Assuming a one-to-many relationship from User to Listings
+        return Inertia::render('Listings/index', ['listings' => $userListings]);
+    }
+
 
     /**
      * Show the form for creating a new resource.

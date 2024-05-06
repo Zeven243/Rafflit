@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
-  allListings: {
+  listings: {
     type: Array,
     default: () => [],
   },
@@ -12,7 +12,7 @@ const props = defineProps({
 const searchQuery = ref('');
 
 const filteredListings = computed(() => {
-  return props.allListings.filter((listing) => {
+  return props.listings.filter((listing) => {
     const matchesSearch = listing.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       listing.description.toLowerCase().includes(searchQuery.value.toLowerCase());
     return listing.is_active && matchesSearch;

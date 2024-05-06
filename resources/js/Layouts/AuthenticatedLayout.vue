@@ -20,7 +20,7 @@ const showingNavigationDropdown = ref(false);
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
                 <Link :href="route('dashboard')">
-                  <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
+                <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
                 </Link>
               </div>
               <!-- Navigation Links -->

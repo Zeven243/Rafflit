@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import AllListings from '@/Components/AllListings.vue';
 
-const { allListings } = usePage().props;
+const { listings } = usePage().props;
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const { allListings } = usePage().props;
           <div class="p-6">
             <h2 class="font-semibold text-2xl text-gray-800 leading-tight">Dashboard</h2>
             <div class="mt-6 text-gray-900">You're logged in!</div>
-            <AllListings :allListings="allListings" />
+            <AllListings :listings="listings" />
           </div>
         </div>
       </div>
