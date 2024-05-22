@@ -20,7 +20,7 @@ const showingNavigationDropdown = ref(false);
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
                 <Link :href="route('dashboard')">
-                <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
+                  <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
                 </Link>
               </div>
               <!-- Navigation Links -->
@@ -52,7 +52,7 @@ const showingNavigationDropdown = ref(false);
                         class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-white bg-opacity-20 hover:bg-opacity-30 focus:outline-none transition ease-in-out duration-150">
                         <div class="relative mr-2">
                           <img
-                            :src="$page.props.auth.user.profile_picture ? `/storage/${$page.props.auth.user.profile_picture}` : '/storage/default-profile-picture.png'"
+                            :src="$page.props.auth.user.profile_picture ? `/storage/${$page.props.auth.user.profile_picture.replace('public/', '')}` : '/storage/default-profile-picture.png'"
                             alt="Profile Picture" class="w-10 h-10 rounded-full" />
                         </div>
                         {{ $page.props.auth.user.name }}
@@ -71,6 +71,9 @@ const showingNavigationDropdown = ref(false);
                     </DropdownLink>
                     <DropdownLink :href="route('user-management.index')">
                       User Management
+                    </DropdownLink>
+                    <DropdownLink :href="route('item-management.index')">
+                      Item Management
                     </DropdownLink>
                     <DropdownLink :href="route('logout')" method="post" as="button">
                       Log Out
@@ -121,6 +124,12 @@ const showingNavigationDropdown = ref(false);
             <div class="mt-3 space-y-1">
               <ResponsiveNavLink :href="route('profile.edit')">
                 Profile
+              </ResponsiveNavLink>
+              <ResponsiveNavLink :href="route('user-management.index')">
+                User Management
+              </ResponsiveNavLink>
+              <ResponsiveNavLink :href="route('item-management.index')">
+                Item Management
               </ResponsiveNavLink>
               <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                 Log Out

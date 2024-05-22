@@ -14,12 +14,16 @@ class Listings extends Model
     protected $fillable = [
         'name',
         'description',
-        'price',
-        'amount_of_tickets',
+        'category_id',
         'user_id',
-        'image',
-        'winner_user_id',
+        'full_price',
+        'amount_of_tickets',
+        'image_path',
+        'tickets_sold',
+        'winner_user_id', // Add this line
     ];
+    
+    
 
     public function raffleEntries()
     {
@@ -44,4 +48,16 @@ class Listings extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function variations()
+    {
+        return $this->hasMany(Variation::class, 'listing_id');
+    }
+
+
 }

@@ -15,17 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->integer('price');
-            $table->unsignedInteger('amount_of_tickets');
-            $table->unsignedInteger('tickets_sold')->default(0);
-            $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('winner_user_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->boolean('is_active')->default(true);
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+            $table->decimal('full_price', 10, 2)->default(0.00);
+            $table->unsignedInteger('amount_of_tickets')->default(0);
+            $table->decimal('ticket_price', 10, 2)->virtualAs('full_price / amount_of_tickets');
+            $table->string('image_path')->nullable();
+            $table->unsignedInteger('tickets_sold')->default(0);
+            $table->boolean('is_active')->default(true); // Add this line
+            $table->unsignedBigInteger('winner_user_id')->nullable(); // Add this line
             $table->timestamps();
         });
     }
-    
 
     /**
      * Reverse the migrations.

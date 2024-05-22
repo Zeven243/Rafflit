@@ -3,11 +3,14 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ListingsController;
 use App\Http\Controllers\UserLogsController;
 use App\Http\Controllers\AuditSystemsController;
+use App\Http\Controllers\CarouselImageController;
+use App\Http\Controllers\ItemManagementController;
 use App\Http\Controllers\RoleManagementController;
 use App\Http\Controllers\SystemSettingsController;
 use App\Http\Controllers\UserManagementController;
@@ -23,6 +26,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ListingsController::class, 'index'])->name('dashboard');
+    Route::resource('searches', SearchController::class);
 
     // Routes accessible by Standard users
     Route::middleware(['checkRole:Standard User,Administrator,Developer-Master'])->group(function () {
@@ -38,6 +42,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update-picture');
+        Route::post('/categories', [ListingsController::class, 'storeCategory'])->name('categories.store');
+        Route::post('/listings/{listing}/buy-out', [ListingsController::class, 'buyOut'])->name('listings.buy-out');
+        
+
+
     });
 
     // Routes accessible by Administrator and Developer-Master
@@ -45,6 +54,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Administrative routes
         Route::get('/audit-systems', [AuditSystemsController::class, 'index'])->name('audit-systems.index');
         Route::resource('role-management', RoleManagementController::class);
+        Route::get('/item-management', [ItemManagementController::class, 'index'])->name('item-management.index');
+        Route::get('/item-management', [ItemManagementController::class, 'index'])->name('item-management.index');
+        Route::post('/carousel-images', [CarouselImageController::class, 'store'])->name('carousel-images.store');
+        Route::delete('/carousel-images/{carouselImage}', [CarouselImageController::class, 'destroy'])->name('carousel-images.destroy');
+        Route::post('/carousel-images/{carouselImage}/replace', [CarouselImageController::class, 'replace'])->name('carousel-images.replace');
+
+        
+
+
     });
 
     // Routes exclusively for Developer-Master
@@ -54,5 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/user-management/{user}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
     });
 });
+
 
 require __DIR__.'/auth.php';

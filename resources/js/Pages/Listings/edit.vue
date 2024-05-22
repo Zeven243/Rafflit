@@ -15,8 +15,23 @@
                 <textarea id="description" v-model="form.description" class="block w-full rounded-md border-gray-300 shadow-sm" required></textarea>
               </div>
               <div class="mb-4">
-                <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price:</label>
-                <input type="number" id="price" v-model="form.price" class="block w-full rounded-md border-gray-300 shadow-sm" required>
+                <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+                <select id="category" v-model="form.category_id" class="block w-full rounded-md border-gray-300 shadow-sm" required>
+                  <option value="" disabled>Select a category</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                </select>
+              </div>
+              <div class="mb-4">
+                <label for="full_price" class="block text-gray-700 text-sm font-bold mb-2">Full Price:</label>
+                <input type="number" id="full_price" v-model="form.full_price" class="block w-full rounded-md border-gray-300 shadow-sm" required>
+              </div>
+              <div class="mb-4">
+                <label for="amount_of_tickets" class="block text-gray-700 text-sm font-bold mb-2">Amount of Tickets:</label>
+                <input type="number" id="amount_of_tickets" v-model="form.amount_of_tickets" class="block w-full rounded-md border-gray-300 shadow-sm" required>
+              </div>
+              <div class="mb-4">
+                <label for="ticket_price" class="block text-gray-700 text-sm font-bold mb-2">Ticket Price:</label>
+                <input type="number" id="ticket_price" v-model="form.ticket_price" class="block w-full rounded-md border-gray-300 shadow-sm" readonly>
               </div>
               <div class="mb-4">
                 <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image:</label>
@@ -44,18 +59,26 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
   listing: Object,
+  categories: Array,
 });
 
 const form = ref({
   name: props.listing.name,
   description: props.listing.description,
-  price: props.listing.price,
+  category_id: props.listing.category_id,
+  full_price: props.listing.full_price,
+  amount_of_tickets: props.listing.amount_of_tickets,
+  ticket_price: props.listing.ticket_price,
   image: null,
+});
+
+const ticketPrice = computed(() => {
+  return form.value.full_price && form.value.amount_of_tickets ? (form.value.full_price / form.value.amount_of_tickets).toFixed(2) : 0;
 });
 
 const handleFileUpload = event => {
@@ -66,7 +89,10 @@ const submitForm = () => {
   let formData = new FormData();
   formData.append('name', form.value.name);
   formData.append('description', form.value.description);
-  formData.append('price', form.value.price);
+  formData.append('category_id', form.value.category_id);
+  formData.append('full_price', form.value.full_price);
+  formData.append('amount_of_tickets', form.value.amount_of_tickets);
+  formData.append('ticket_price', ticketPrice.value);
   if (form.value.image) {
     formData.append('image', form.value.image);
   }
