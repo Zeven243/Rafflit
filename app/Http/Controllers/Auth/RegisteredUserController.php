@@ -27,39 +27,37 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      */
-/**
- * Handle an incoming registration request.
- */
-public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        'profile_picture' => 'nullable|image|max:2048', // 2MB Max
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'profile_picture' => 'nullable|image|max:2048',
+            'company' => 'required|string|max:255', // Add validation for the company field
+        ]);
+    
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'company' => $request->company, // Include the company field when creating the user
+        ]);
 
-    $user = User::create([
-        'first_name' => $request->first_name,
-        'last_name' => $request->last_name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
+        if ($request->hasFile('profile_picture')) {
+            $profilePicture = $request->file('profile_picture');
+            $filename = Str::slug($user->first_name) . '_' . time() . '.' . $profilePicture->getClientOriginalExtension();
+            $path = $profilePicture->storeAs('public/profile_pictures', $filename);
+            $user->profile_picture = $path;
+            $user->save();
+        }
 
-    if ($request->hasFile('profile_picture')) {
-        $profilePicture = $request->file('profile_picture');
-        $filename = Str::slug($user->first_name) . '_' . time() . '.' . $profilePicture->getClientOriginalExtension();
-        $path = $profilePicture->storeAs('public/profile_pictures', $filename);
-        $user->profile_picture = $path;
-        $user->save();
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect(RouteServiceProvider::HOME);
     }
-
-    event(new Registered($user));
-
-    Auth::login($user);
-
-    return redirect(RouteServiceProvider::HOME);
-}
-
 }

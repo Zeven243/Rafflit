@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('ticket_price', 10, 2)->virtualAs('full_price / amount_of_tickets');
             $table->string('image_path')->nullable();
             $table->unsignedInteger('tickets_sold')->default(0);
+            $table->string('company')->nullable();
             $table->boolean('is_active')->default(true); // Add this line
             $table->unsignedBigInteger('winner_user_id')->nullable(); // Add this line
             $table->timestamps();

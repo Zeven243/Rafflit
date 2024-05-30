@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CarouselImageController;
+use App\Http\Controllers\SearchController;
 
 
 /*
@@ -22,6 +23,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->get('/carousel-images', [CarouselImageController::class, 'index']);
 
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/recent-searches', [SearchController::class, 'recentSearches']);
+    Route::get('/trending-searches', [SearchController::class, 'trendingSearches']);
+    Route::post('/save-search', [SearchController::class, 'saveSearch']);
+});
 
 

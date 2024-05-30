@@ -13,6 +13,7 @@
             <div class="p-6 md:w-1/2">
               <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ listing.name }}</h1>
               <p class="text-gray-600 mb-4">{{ listing.description }}</p>
+              <p class="text-gray-600 mb-4">Sold by: {{ listing.company }}</p>
               <div class="mb-4">
                 <span class="text-gray-900 font-bold">Category: {{ listing.category.name }}</span>
               </div>
@@ -46,7 +47,7 @@
                 </div>
               </div>
               <!-- Buttons -->
-              <div class="flex justify-between items-center mb-4">
+              <div v-if="!allTicketsSold" class="flex justify-between items-center mb-4">
                 <button @click="enterRaffle" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                   Enter Raffle
                 </button>
@@ -55,8 +56,8 @@
                 </button>
               </div>
               <div class="flex justify-between items-center">
-                <Link href="/listings" class="inline-block bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-2 px-4 rounded">
-                  Back to Listings
+                <Link href="/dashboard" class="inline-block bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-2 px-4 rounded">
+                  Back to Dashboard
                 </Link>
               </div>
             </div>
@@ -68,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'; // Import computed from Vue
+import { ref, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
@@ -78,19 +79,24 @@ const props = defineProps({
 });
 
 const progressPercentage = computed(() => {
-  const soldTickets = props.listing.sold_tickets || 0;
+  const soldTickets = props.listing.tickets_sold || 0;
   const totalTickets = props.listing.amount_of_tickets || 1;
   return ((soldTickets / totalTickets) * 100).toFixed(2);
 });
 
+const allTicketsSold = computed(() => {
+  return props.listing.tickets_sold >= props.listing.amount_of_tickets;
+});
+
 const hasRaffleEntries = computed(() => {
-  return props.listing.sold_tickets > 0;
+  return props.listing.tickets_sold > 0;
 });
 
 const enterRaffle = () => {
   Inertia.post(route('listings.raffle-entry.store', props.listing.id), {
     onSuccess: () => {
-      // Handle success, e.g., show a notification
+      // Reload the page to fetch the updated listing data
+      Inertia.reload();
     },
     onError: (errors) => {
       // Handle errors, e.g., show a notification
@@ -101,7 +107,8 @@ const enterRaffle = () => {
 const buyOut = () => {
   Inertia.post(route('listings.buy-out', props.listing.id), {
     onSuccess: () => {
-      // Handle success, e.g., show a notification
+      // Reload the page to fetch the updated listing data
+      Inertia.reload();
     },
     onError: (errors) => {
       // Handle errors, e.g., show a notification

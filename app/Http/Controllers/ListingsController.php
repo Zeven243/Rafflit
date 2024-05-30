@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Listings;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +37,10 @@ class ListingsController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $users = User::all();
         return Inertia::render('Listings/create', [
             'categories' => $categories,
+            'users' => $users,
         ]);
     }
 
@@ -50,6 +53,7 @@ class ListingsController extends Controller
             'name' => 'required|max:255',
             'description' => 'required|max:255',
             'category_id' => 'required|exists:categories,id',
+            'company' => 'required|string|max:255',
             'full_price' => 'required|numeric|min:0.01',
             'amount_of_tickets' => 'required|integer|min:1',
             'image' => 'nullable|image',
@@ -68,6 +72,7 @@ class ListingsController extends Controller
             'description' => $request->description,
             'category_id' => $request->category_id,
             'user_id' => auth()->user()->id,
+            'company' => $request->company,
             'full_price' => (float) $request->full_price,
             'amount_of_tickets' => (int) $request->amount_of_tickets,
             'ticket_price' => (float) ($request->full_price / $request->amount_of_tickets),
@@ -88,14 +93,12 @@ class ListingsController extends Controller
     public function show(Listings $listing)
     {
         $listing->load('category');
-    
-        // Calculate the number of sold tickets
-        $soldTickets = $listing->raffleEntries()->count();
-    
+        
         return Inertia::render('Listings/show', [
-            'listing' => array_merge($listing->toArray(), ['sold_tickets' => $soldTickets]),
+            'listing' => array_merge($listing->toArray(), ['tickets_sold' => $listing->tickets_sold]),
         ]);
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -166,6 +169,7 @@ class ListingsController extends Controller
 
         return redirect()->route('listings.index')->with('success', 'Listing deleted successfully.');
     }
+
 
     /**
      * Store a raffle entry for the specified listing.
@@ -238,6 +242,11 @@ class ListingsController extends Controller
                 }
             }
 
+            if (empty($entries)) {
+                // Handle the case where there are no entries
+                return redirect()->back()->with('error', 'No raffle entries available.');
+            }
+
             // Select a random winner from the entries array
             $winnerUserId = $entries[array_rand($entries)];
 
@@ -300,19 +309,19 @@ class ListingsController extends Controller
     {
         DB::transaction(function () use ($listingId, $request) {
             $listing = Listings::lockForUpdate()->findOrFail($listingId);
-    
+        
             if ($listing->tickets_sold === 0) {
                 $listing->tickets_sold = $listing->amount_of_tickets;
                 $listing->winner_user_id = $request->user()->id;
                 $listing->is_active = false;
                 $listing->save();
-    
+        
                 // Create a new RaffleEntry for the user who bought out the item
                 RaffleEntry::create([
                     'user_id' => $request->user()->id,
                     'listing_id' => $listingId,
                 ]);
-    
+        
                 activity()
                     ->causedBy(auth()->user())
                     ->performedOn($listing)
@@ -321,8 +330,12 @@ class ListingsController extends Controller
                 return redirect()->route('dashboard')->with('error', 'Tickets have already been sold.');
             }
         });
-    
-        return redirect()->route('dashboard')->with('success', 'You have successfully bought out all tickets.');
+        
+        // Return the updated listing data
+        return redirect()->route('listings.show', $listingId)->with('success', 'You have successfully bought out all tickets.');
     }
+    
+    
+    
     
 }

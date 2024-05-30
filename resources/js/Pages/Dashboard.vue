@@ -214,9 +214,3 @@ const goToListing = (id) => {
   router.visit(route('listings.show', id));
 };
 </script>
-
-<style scoped>
-.group:hover .group-hover\:scale-105 {
-  transform: scale(1.05);
-}
-</style>

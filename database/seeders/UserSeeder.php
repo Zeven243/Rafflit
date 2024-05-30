@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'email' => 'User@test.com',
             'password' => Hash::make('Password'),
             'profile_picture' => null, // Set the profile picture path if available
+            'company' => 'Rafflit',
         ]);
 
         $user = User::create([
@@ -28,6 +29,7 @@ class UserSeeder extends Seeder
             'email' => 'User@test2.com',
             'password' => Hash::make('Password'),
             'profile_picture' => null, // Set the profile picture path if available
+            'company' => 'Rafflit',
         ]);
     }
 }

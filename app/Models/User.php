@@ -19,6 +19,7 @@ class User extends Authenticatable
         'email',
         'password',
         'profile_picture',
+        'company',
     ];
 
     protected $hidden = [
@@ -59,5 +60,10 @@ class User extends Authenticatable
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "User {$eventName}")
             ->dontSubmitEmptyLogs();
+    }
+
+    public function hasAnyRole($roles)
+    {
+        return $this->roles()->whereIn('name', $roles)->exists();
     }
 }

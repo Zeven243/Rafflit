@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Search;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
@@ -108,5 +109,41 @@ class SearchController extends Controller
 
         return redirect()->route('searches.index')
             ->with('success', 'Search deleted successfully.');
+    }
+
+    /**
+     * Fetch recent searches for the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function recentSearches()
+    {
+        $recentSearches = Auth::user()->recentSearches()->latest()->take(5)->pluck('query');
+        return response()->json($recentSearches);
+    }
+
+    /**
+     * Fetch trending searches.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function trendingSearches()
+    {
+        // Fetch trending searches (this is just a placeholder, implement your logic)
+        $trendingSearches = ['example search 1', 'example search 2', 'example search 3'];
+        return response()->json($trendingSearches);
+    }
+
+    /**
+     * Save a search query for the authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saveSearch(Request $request)
+    {
+        $request->validate(['query' => 'required|string']);
+        Auth::user()->recentSearches()->create(['query' => $request->query]);
+        return response()->json(['message' => 'Search query saved successfully']);
     }
 }

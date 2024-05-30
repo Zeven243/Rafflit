@@ -26,6 +26,7 @@ class DeveloperMasterUserSeeder extends Seeder
             'email' => 'Hein.Engelbrecht@Rafflit.com',
             'password' => Hash::make('Password'),
             'profile_picture' => null, // Set the profile picture path if available
+            'company' => 'Rafflit',
         ]);
 
         // Assign the "Developer-Master" role to your user

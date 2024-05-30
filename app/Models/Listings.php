@@ -21,6 +21,7 @@ class Listings extends Model
         'image_path',
         'tickets_sold',
         'winner_user_id', // Add this line
+        'company',
     ];
     
     

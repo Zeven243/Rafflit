@@ -32,6 +32,14 @@
           </div>
 
           <div>
+            <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+            <select id="company" name="company" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" v-model="form.company">
+              <option value="" disabled>Select a company</option>
+              <option v-for="company in uniqueCompanies" :key="company" :value="company">{{ company }}</option>
+            </select>
+          </div>
+
+          <div>
             <label for="full_price" class="block text-sm font-medium text-gray-700">Full Price</label>
             <input type="number" id="full_price" name="full_price" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" v-model.number="form.full_price">
             <div v-if="form.errors.full_price" class="text-red-500 text-xs italic">{{ form.errors.full_price }}</div>
@@ -89,9 +97,13 @@ import { computed, ref } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
 
-defineProps({
+const props = defineProps({
   errors: Object,
   categories: {
+    type: Array,
+    required: true,
+  },
+  users: {
     type: Array,
     required: true,
   },
@@ -101,6 +113,7 @@ const form = useForm({
   name: '',
   description: '',
   category_id: null,
+  company: '',
   full_price: 0,
   amount_of_tickets: 0,
   image: null,
@@ -108,6 +121,11 @@ const form = useForm({
 
 const ticketPrice = computed(() => {
   return form.full_price && form.amount_of_tickets ? (form.full_price / form.amount_of_tickets).toFixed(2) : 0;
+});
+
+const uniqueCompanies = computed(() => {
+  const companies = props.users.map(user => user.company);
+  return [...new Set(companies)];
 });
 
 const resetForm = () => {
@@ -134,9 +152,8 @@ const categoryError = ref('');
 const createCategory = async () => {
   try {
     const response = await axios.post(route('categories.store'), { name: newCategoryName.value });
-    const newCategory = response.data.category;
-    const categoriesResponse = await axios.get(route('categories.index'));
-    categories.value = categoriesResponse.data;
+    const newCategory = response.data;
+    props.categories.push(newCategory);
     newCategoryName.value = '';
     showCreateCategoryModal.value = false;
     categoryError.value = '';
