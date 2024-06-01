@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use DB;
+use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Activitylog\LogOptions;
 
 class Listings extends Model
 {
@@ -20,8 +21,10 @@ class Listings extends Model
         'amount_of_tickets',
         'image_path',
         'tickets_sold',
-        'winner_user_id', // Add this line
+        'winner_user_id',
         'company',
+        'potential_tickets', 
+
     ];
     
     
@@ -59,6 +62,16 @@ class Listings extends Model
     {
         return $this->hasMany(Variation::class, 'listing_id');
     }
+
+    // Listing.php
+
+    public function existsInCart()
+    {
+        return DB::table('cart_items')
+            ->where('listing_id', $this->id)
+            ->exists();
+    }
+
 
 
 }

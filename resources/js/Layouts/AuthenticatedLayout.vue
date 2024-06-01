@@ -12,8 +12,13 @@ const showingNavigationDropdown = ref(false);
 const { props } = usePage();
 
 const hasRole = (roles) => {
-  const userRoles = props.auth.user.roles || [];
-  return userRoles.some(role => roles.includes(role.name));
+  const userRoles = props.auth.roles || [];
+  return roles.some(role => userRoles.includes(role));
+};
+
+const hasPermission = (permissions) => {
+  const userPermissions = props.auth.permissions || [];
+  return permissions.some(permission => userPermissions.includes(permission));
 };
 </script>
 
@@ -42,7 +47,7 @@ const hasRole = (roles) => {
                 <NavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')" :active="route().current('listings.create')">
                   Create a Listing
                 </NavLink>
-                <NavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
+                <NavLink :href="route('raffle-entries.show')" :active="route().current('raffle-entries.show')">
                   My Raffle Entries
                 </NavLink>
               </div>
@@ -81,10 +86,10 @@ const hasRole = (roles) => {
                     <DropdownLink :href="route('profile.edit')">
                       Profile
                     </DropdownLink>
-                    <DropdownLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('user-management.index')">
+                    <DropdownLink v-if="hasPermission(['manage users'])" :href="route('user-management.index')">
                       User Management
                     </DropdownLink>
-                    <DropdownLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('item-management.index')">
+                    <DropdownLink v-if="hasPermission(['manage items'])" :href="route('item-management.index')">
                       Item Management
                     </DropdownLink>
                     <DropdownLink :href="route('logout')" method="post" as="button">
@@ -120,7 +125,7 @@ const hasRole = (roles) => {
             <ResponsiveNavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')" :active="route().current('listings.create')">
               Create a Listing
             </ResponsiveNavLink>
-            <ResponsiveNavLink :href="route('raffle-entries.index')" :active="route().current('raffle-entries.index')">
+            <ResponsiveNavLink :href="route('raffle-entries.show')" :active="route().current('raffle-entries.show')">
               My Raffle Entries
             </ResponsiveNavLink>
             <ResponsiveNavLink :href="route('cart.index')" :active="route().current('cart.index')">
@@ -140,10 +145,10 @@ const hasRole = (roles) => {
               <ResponsiveNavLink :href="route('profile.edit')">
                 Profile
               </ResponsiveNavLink>
-              <ResponsiveNavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('user-management.index')">
+              <ResponsiveNavLink v-if="hasPermission(['manage users'])" :href="route('user-management.index')">
                 User Management
               </ResponsiveNavLink>
-              <ResponsiveNavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('item-management.index')">
+              <ResponsiveNavLink v-if="hasPermission(['manage items'])" :href="route('item-management.index')">
                 Item Management
               </ResponsiveNavLink>
               <ResponsiveNavLink :href="route('logout')" method="post" as="button">

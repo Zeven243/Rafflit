@@ -1,10 +1,62 @@
+<template>
+  <div class="mt-6 px-4 sm:px-6 lg:px-8">
+    <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Raffle Entries</h3>
+    <div v-if="showNoEntriesMessage" class="bg-yellow-200 text-yellow-800 p-4 rounded-md shadow">
+      Get started by entering a raffle and increase your chances to win!
+    </div>
+    <div v-for="(group, groupId) in groupedEntries" :key="groupId" class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 mb-4">
+      <div class="flex flex-col sm:flex-row sm:items-center">
+        <!-- Product image -->
+        <img :src="`/storage/${group.listing.image_path}`" alt="Product Image" class="w-16 h-16 object-cover rounded mr-4 mb-4 sm:mb-0">
+        <div class="flex-1">
+          <div class="font-medium text-gray-800">Listing: {{ group.listing.name }}</div>
+          <div class="text-sm text-gray-500">Description: {{ group.listing.description }}</div>
+          <!-- Progress bar -->
+          <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+            <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: progressPercentage(group.listing.tickets_sold, group.listing.amount_of_tickets) + '%' }"></div>
+          </div>
+          <div class="mt-2 text-sm">
+            <span>{{ group.listing.tickets_sold }}/{{ group.listing.amount_of_tickets }} tickets sold</span>
+          </div>
+        </div>
+      </div>
+      <!-- Winner Selection in progress or Winner notification -->
+      <div class="mt-4">
+        <transition name="winner-animation" mode="out-in">
+          <div v-if="group.isFull && group.isWinner" key="winner" class="bg-green-500 to-green-700 text-white font-bold py-2 px-4 rounded text-center">
+            Congratulations, You won!
+          </div>
+          <div v-else-if="group.isFull && !group.isWinner" key="loser" class="bg-orange-500 to-orange-700 text-white font-bold py-2 px-4 rounded text-center">
+            Better luck next time!
+          </div>
+          <div v-else-if="group.isFull" key="winner-name" class="bg-green-500 to-green-700 text-white font-bold py-2 px-4 rounded text-center">
+            Winner: {{ getWinnerName(group.listing.id) }}
+          </div>
+        </transition>
+        <button v-if="!group.isFull" @click="toggleGroup(groupId)" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded mt-2">
+          View Tickets ({{ group.tickets.length }})
+        </button>
+      </div>
+      <!-- Dropdown for ticket numbers -->
+      <div v-if="openGroup === groupId" class="mt-4">
+        <div v-for="ticketId in group.tickets" :key="ticketId" class="text-gray-800">
+          Ticket #: {{ ticketId }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 
-// Define the prop with a default value of an empty array
 const props = defineProps({
   raffleEntries: {
+    type: Array,
+    default: () => [],
+  },
+  wonListings: {
     type: Array,
     default: () => [],
   },
@@ -51,53 +103,16 @@ const openGroup = ref(null);
 const toggleGroup = (groupId) => {
   openGroup.value = openGroup.value === groupId ? null : groupId;
 };
-</script>
 
-<template>
-  <div class="mt-6 px-4 sm:px-6 lg:px-8">
-    <h3 class="text-2xl font-bold text-gray-800 mb-6">Your Raffle Entries</h3>
-    <div v-if="showNoEntriesMessage" class="bg-yellow-200 text-yellow-800 p-4 rounded-md shadow">
-      Get started by entering a raffle and increase your chances to win!
-    </div>
-    <div v-for="(group, groupId) in groupedEntries" :key="groupId" class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 mb-4">
-      <div class="flex flex-col sm:flex-row sm:items-center">
-        <!-- Product image -->
-        <img :src="`/storage/${group.listing.image_path}`" alt="Product Image" class="w-16 h-16 object-cover rounded mr-4 mb-4 sm:mb-0">
-        <div class="flex-1">
-          <div class="font-medium text-gray-800">Listing: {{ group.listing.name }}</div>
-          <div class="text-sm text-gray-500">Description: {{ group.listing.description }}</div>
-          <!-- Progress bar -->
-          <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-            <div class="bg-blue-600 h-2.5 rounded-full" :style="{ width: progressPercentage(group.listing.tickets_sold, group.listing.amount_of_tickets) + '%' }"></div>
-          </div>
-          <div class="mt-2 text-sm">
-            <span>{{ group.listing.tickets_sold }}/{{ group.listing.amount_of_tickets }} tickets sold</span>
-          </div>
-        </div>
-      </div>
-      <!-- Winner Selection in progress or Winner notification -->
-      <div class="mt-4">
-        <transition name="winner-animation" mode="out-in">
-          <div v-if="group.isFull && group.isWinner" key="winner" class="bg-green-500 to-green-700 text-white font-bold py-2 px-4 rounded text-center">
-            Congratulations, You won!
-          </div>
-          <div v-else-if="group.isFull" key="loser" class="bg-orange-500 to-orange-700 text-white font-bold py-2 px-4 rounded text-center">
-            Better luck next time!
-          </div>
-        </transition>
-        <button v-if="!group.isFull" @click="toggleGroup(groupId)" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded mt-2">
-          View Tickets ({{ group.tickets.length }})
-        </button>
-      </div>
-      <!-- Dropdown for ticket numbers -->
-      <div v-if="openGroup === groupId" class="mt-4">
-        <div v-for="ticketId in group.tickets" :key="ticketId" class="text-gray-800">
-          Ticket #: {{ ticketId }}
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
+// Function to get the winner's name from the activity log
+const getWinnerName = (listingId) => {
+  const activity = props.raffleEntries
+    .find((entry) => entry.listing.id === listingId)
+    .listing.activity.find((log) => log.description === 'selected winner');
+
+  return activity ? activity.properties.winner_name : '';
+};
+</script>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {

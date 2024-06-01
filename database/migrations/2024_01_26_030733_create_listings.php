@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('image_path')->nullable();
             $table->unsignedInteger('tickets_sold')->default(0);
             $table->string('company')->nullable();
+            $table->unsignedInteger('potential_tickets')->default(0);
             $table->boolean('is_active')->default(true); // Add this line
             $table->unsignedBigInteger('winner_user_id')->nullable(); // Add this line
             $table->timestamps();

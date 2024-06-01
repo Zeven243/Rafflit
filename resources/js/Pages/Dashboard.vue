@@ -77,12 +77,18 @@
               <h2 v-if="!searchPerformed" class="text-2xl font-bold mb-4">New to Rafflit</h2>
               <div v-if="!searchPerformed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 py-3">
                 <div v-for="listing in latestListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
-                  <ListingCard :listing="listing" class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer" />
+                  <ListingCard
+                    :listing="listing"
+                    class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
+                  />
                 </div>
               </div>
               <div v-if="searchPerformed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 py-3">
                 <div v-for="listing in filteredListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
-                  <ListingCard :listing="listing" class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer" />
+                  <ListingCard
+                    :listing="listing"
+                    class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
+                  />
                 </div>
               </div>
             </div>

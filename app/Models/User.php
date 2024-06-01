@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Listings;
+use App\Models\RaffleEntry;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, LogsActivity;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, LogsActivity;
 
     protected $fillable = [
         'first_name',
@@ -32,27 +35,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function raffleEntries()
-    {
-        return $this->hasMany(RaffleEntry::class);
-    }
-
-    public function wallet()
-    {
-        return $this->hasOne(Wallet::class);
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    // Define the one-to-many relationship with Listings
-    public function listings()
-    {
-        return $this->hasMany(Listings::class);
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -62,8 +44,15 @@ class User extends Authenticatable
             ->dontSubmitEmptyLogs();
     }
 
-    public function hasAnyRole($roles)
+    // Define the one-to-many relationship with Listings
+    public function listings()
     {
-        return $this->roles()->whereIn('name', $roles)->exists();
+        return $this->hasMany(Listings::class);
+    }
+
+    // Define the one-to-many relationship with RaffleEntries
+    public function raffleEntries()
+    {
+        return $this->hasMany(RaffleEntry::class);
     }
 }
