@@ -48,10 +48,10 @@
               </div>
               <!-- Buttons -->
               <div v-if="!allTicketsSold" class="flex justify-between items-center mb-4">
-                <button @click="enterRaffle" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <button @click.stop="enterRaffle" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                   Enter Raffle
                 </button>
-                <button v-if="!hasRaffleEntries" @click="buyOut" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                <button v-if="!listing.exists_in_cart && !hasRaffleEntries" @click="buyOut" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                   Buy Out
                 </button>
               </div>
@@ -65,6 +65,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Raffle Modal -->
+    <div v-if="showRaffleModal" class="fixed inset-0 flex items-center justify-center z-50" @click.stop>
+      <div class="bg-white rounded-lg shadow-lg p-6" @click.stop>
+        <h3 class="text-lg font-medium mb-4">Enter Raffle</h3>
+        <div>
+          <label for="ticket-quantity" class="block text-sm font-medium text-gray-700">Number of Tickets</label>
+          <div class="flex items-center mt-1">
+            <button @click="decrementQuantity" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">-</button>
+            <input type="number" id="ticket-quantity" v-model="ticketQuantity" :max="maxTickets - listing.potential_tickets" min="1" class="w-16 text-center border-t border-b border-gray-300 shadow-sm" @click.stop>
+            <button @click="incrementQuantity" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">+</button>
+          </div>
+          <p class="text-gray-600 mt-2">Available Tickets: {{ maxTickets - listing.potential_tickets }}</p>
+          <p class="text-gray-600 mt-2">Potential Tickets: {{ listing.potential_tickets }}</p>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button type="button" @click="showRaffleModal = false" class="mr-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+            Cancel
+          </button>
+          <button type="button" @click="addToCart" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash Message -->
+    <div v-if="showFlashMessage" class="fixed bottom-0 left-0 right-0 p-4 bg-green-500 text-white">
+      {{ flashMessage }}
+    </div>
   </AuthenticatedLayout>
 </template>
 
@@ -77,6 +107,11 @@ import { Inertia } from '@inertiajs/inertia';
 const props = defineProps({
   listing: Object,
 });
+
+const showRaffleModal = ref(false);
+const ticketQuantity = ref(1);
+const showFlashMessage = ref(false);
+const flashMessage = ref('');
 
 const progressPercentage = computed(() => {
   const soldTickets = props.listing.tickets_sold || 0;
@@ -92,14 +127,36 @@ const hasRaffleEntries = computed(() => {
   return props.listing.tickets_sold > 0;
 });
 
+const maxTickets = computed(() => {
+  return props.listing.amount_of_tickets - props.listing.tickets_sold;
+});
+
 const enterRaffle = () => {
-  Inertia.post(route('listings.raffle-entry.store', props.listing.id), {
+  showRaffleModal.value = true;
+};
+
+const addToCart = () => {
+  const totalPotentialTickets = props.listing.potential_tickets + ticketQuantity.value;
+  if (totalPotentialTickets > maxTickets.value) {
+    alert(`You can only buy up to ${maxTickets.value - props.listing.potential_tickets} tickets.`);
+    return;
+  }
+
+  Inertia.post(route('cart.store'), {
+    listing_id: props.listing.id,
+    quantity: ticketQuantity.value,
+  }, {
     onSuccess: () => {
-      // Reload the page to fetch the updated listing data
-      Inertia.reload();
+      showFlashMessage.value = true;
+      flashMessage.value = `${ticketQuantity.value} ticket(s) added to your cart.`;
+      setTimeout(() => {
+        showFlashMessage.value = false;
+        flashMessage.value = '';
+      }, 3000); // Hide the flash message after 3 seconds
+      showRaffleModal.value = false;
     },
     onError: (errors) => {
-      // Handle errors, e.g., show a notification
+      console.error('Error adding to cart:', errors);
     }
   });
 };
@@ -114,6 +171,18 @@ const buyOut = () => {
       // Handle errors, e.g., show a notification
     }
   });
+};
+
+const incrementQuantity = () => {
+  if (ticketQuantity.value < maxTickets.value - props.listing.potential_tickets) {
+    ticketQuantity.value++;
+  }
+};
+
+const decrementQuantity = () => {
+  if (ticketQuantity.value > 1) {
+    ticketQuantity.value--;
+  }
 };
 </script>
 

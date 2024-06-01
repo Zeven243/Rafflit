@@ -120,11 +120,13 @@ class ListingsController extends Controller
     public function show(Listings $listing)
     {
         $listing->load('category');
-        
+        $listing->exists_in_cart = $this->existsInCart($listing->id);
+    
         return Inertia::render('Listings/show', [
-            'listing' => array_merge($listing->toArray(), ['tickets_sold' => $listing->tickets_sold]),
+            'listing' => array_merge($listing->toArray(), ['tickets_sold' => $listing->tickets_sold, 'exists_in_cart' => $listing->exists_in_cart]),
         ]);
     }
+    
     
 
     /**

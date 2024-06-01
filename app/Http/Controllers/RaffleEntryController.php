@@ -16,32 +16,42 @@ class RaffleEntryController extends Controller
      */
     public function storeRaffleEntry(Request $request, $listingId)
     {
-        DB::transaction(function () use ($listingId) {
-            $listing = Listings::lockForUpdate()->findOrFail($listingId);
+        $listing = Listings::findOrFail($listingId);
 
-            if ($listing->tickets_sold < $listing->amount_of_tickets) {
-                $listing->increment('tickets_sold');
+        if ($listing->tickets_sold < $listing->amount_of_tickets) {
+            $quantity = $request->input('quantity', 1);
 
-                RaffleEntry::create([
-                    'user_id' => auth()->user()->id,
-                    'listing_id' => $listingId,
-                ]);
+            DB::transaction(function () use ($listingId, $quantity) {
+                $listing = Listings::lockForUpdate()->findOrFail($listingId);
 
-                activity()
-                    ->causedBy(auth()->user())
-                    ->performedOn($listing)
-                    ->log('entered raffle');
+                if ($listing->tickets_sold + $quantity <= $listing->amount_of_tickets) {
+                    $listing->increment('tickets_sold', $quantity);
 
-                // Check if all tickets are sold after the raffle entry
-                if ($listing->tickets_sold >= $listing->amount_of_tickets) {
-                    $this->selectWinner($listingId);
+                    for ($i = 0; $i < $quantity; $i++) {
+                        RaffleEntry::create([
+                            'user_id' => auth()->user()->id,
+                            'listing_id' => $listingId,
+                        ]);
+                    }
+
+                    activity()
+                        ->causedBy(auth()->user())
+                        ->performedOn($listing)
+                        ->log('entered raffle');
+
+                    // Check if all tickets are sold after the raffle entry
+                    if ($listing->tickets_sold >= $listing->amount_of_tickets) {
+                        $this->selectWinner($listingId);
+                    }
+                } else {
+                    return redirect()->back()->with('error', 'Not enough tickets available.');
                 }
-            } else {
-                return redirect()->route('dashboard')->with('error', 'All tickets have been sold.');
-            }
-        });
+            });
 
-        return redirect()->route('dashboard')->with('success', 'Entered raffle successfully.');
+            return redirect()->back()->with('success', 'Raffle entry added to cart successfully.');
+        } else {
+            return redirect()->back()->with('error', 'All tickets have been sold.');
+        }
     }
 
     public function getRaffleEntries()
