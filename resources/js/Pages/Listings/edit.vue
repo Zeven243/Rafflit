@@ -34,10 +34,17 @@
                 <input type="number" id="ticket_price" v-model="form.ticket_price" class="block w-full rounded-md border-gray-300 shadow-sm" readonly>
               </div>
               <div class="mb-4">
-                <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image:</label>
-                <input type="file" id="image" @change="handleFileUpload" class="block w-full rounded-md border-gray-300 shadow-sm">
-                <div v-if="form.image" class="mt-2">
-                  <img :src="URL.createObjectURL(form.image)" class="max-w-xs max-h-60 rounded-md">
+                <label for="cover_image" class="block text-gray-700 text-sm font-bold mb-2">Cover Image:</label>
+                <input type="file" id="cover_image" @change="handleCoverImageUpload" class="block w-full rounded-md border-gray-300 shadow-sm">
+                <div v-if="form.cover_image" class="mt-2">
+                  <img :src="URL.createObjectURL(form.cover_image)" class="max-w-xs max-h-60 rounded-md">
+                </div>
+              </div>
+              <div class="mb-4">
+                <label for="images" class="block text-gray-700 text-sm font-bold mb-2">Images:</label>
+                <input type="file" id="images" @change="handleImagesUpload" class="block w-full rounded-md border-gray-300 shadow-sm" multiple>
+                <div v-if="form.images.length" class="mt-2 flex flex-wrap gap-2">
+                  <img v-for="(image, index) in form.images" :key="index" :src="URL.createObjectURL(image)" class="max-w-xs max-h-60 rounded-md">
                 </div>
               </div>
               <div class="flex items-center justify-between">
@@ -74,15 +81,20 @@ const form = ref({
   full_price: props.listing.full_price,
   amount_of_tickets: props.listing.amount_of_tickets,
   ticket_price: props.listing.ticket_price,
-  image: null,
+  cover_image: null,
+  images: [],
 });
 
 const ticketPrice = computed(() => {
   return form.value.full_price && form.value.amount_of_tickets ? (form.value.full_price / form.value.amount_of_tickets).toFixed(2) : 0;
 });
 
-const handleFileUpload = event => {
-  form.value.image = event.target.files[0];
+const handleCoverImageUpload = event => {
+  form.value.cover_image = event.target.files[0];
+};
+
+const handleImagesUpload = event => {
+  form.value.images = Array.from(event.target.files);
 };
 
 const submitForm = () => {
@@ -93,13 +105,17 @@ const submitForm = () => {
   formData.append('full_price', form.value.full_price);
   formData.append('amount_of_tickets', form.value.amount_of_tickets);
   formData.append('ticket_price', ticketPrice.value);
-  if (form.value.image) {
-    formData.append('image', form.value.image);
+  if (form.value.cover_image) {
+    formData.append('cover_image', form.value.cover_image);
   }
+  form.value.images.forEach((image, index) => {
+    formData.append(`images[${index}]`, image);
+  });
 
   Inertia.post(`/listings/${props.listing.id}`, formData, {
     onSuccess: () => {
-      form.value.image = null; // Clear the image input after successful upload
+      form.value.cover_image = null; // Clear the image input after successful upload
+      form.value.images = []; // Clear the images input after successful upload
     },
     preserveState: true,
   });

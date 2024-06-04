@@ -8,7 +8,13 @@
         <div class="bg-white rounded-lg shadow-xl overflow-hidden">
           <div class="flex flex-col md:flex-row">
             <div class="md:w-1/2">
-              <img :src="`/storage/${listing.image_path}`" alt="Listing Image" class="object-cover w-full h-full">
+              <!-- Image Gallery -->
+              <div class="flex flex-col items-center">
+                <img :src="mainImage" alt="Main Image" class="object-cover w-full h-full mb-4">
+                <div class="grid grid-cols-3 gap-2">
+                  <img v-for="(image, index) in allImages" :key="index" :src="`/storage/${image}`" alt="Additional Image" class="object-cover w-full h-24 cursor-pointer" @click="setMainImage(image)">
+                </div>
+              </div>
             </div>
             <div class="p-6 md:w-1/2">
               <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ listing.name }}</h1>
@@ -27,34 +33,42 @@
                 <span class="text-gray-900 font-bold">Ticket Price: R {{ listing.ticket_price }}</span>
               </div>
               <!-- Progress Bar -->
-              <div class="mb-4">
-                <div class="relative pt-1">
-                  <div class="flex mb-2 items-center justify-between">
-                    <div>
-                      <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
-                        Progress
-                      </span>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-xs font-semibold inline-block text-blue-600">
-                        {{ progressPercentage }}%
-                      </span>
-                    </div>
-                  </div>
-                  <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
-                    <div :style="{ width: progressPercentage + '%' }" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-                  </div>
-                </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4 relative">
+                <div class="bg-blue-500 h-2.5 rounded-l-full absolute" :style="{ width: `${soldTickets * 100 / listing.amount_of_tickets}%` }"></div>
+                <div class="bg-yellow-500 h-2.5 rounded-r-full absolute" :style="{ width: `${potentialTickets * 100 / listing.amount_of_tickets}%`, left: `${soldTickets * 100 / listing.amount_of_tickets}%` }"></div>
+              </div>
+              <div class="mt-4 flex justify-between items-center">
+                <template v-if="$page.props.auth.user">
+                  <button
+                    v-if="listing.tickets_sold < listing.amount_of_tickets"
+                    @click.stop="showRaffleModal = true"
+                    class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out"
+                  >
+                    Enter Raffle
+                  </button>
+                  <button
+                    v-else
+                    disabled
+                    class="bg-gray-400 text-white font-bold py-2 px-4 rounded-lg"
+                  >
+                    Winner Selection in progress
+                  </button>
+                  <button
+                    v-if="listing.tickets_sold === 0 && !listing.exists_in_cart"
+                    @click.stop="buyOut(listing.id)"
+                    class="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300 ease-in-out"
+                  >
+                    Buy Out
+                  </button>
+                </template>
+                <template v-else>
+                  <p class="text-gray-600">Please register to purchase item raffle tickets</p>
+                </template>
+              </div>
+              <div class="mt-4">
+                <p class="text-gray-600">Potential Tickets: {{ listing.potential_tickets }}</p>
               </div>
               <!-- Buttons -->
-              <div v-if="!allTicketsSold" class="flex justify-between items-center mb-4">
-                <button @click.stop="enterRaffle" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                  Enter Raffle
-                </button>
-                <button v-if="!listing.exists_in_cart && !hasRaffleEntries" @click="buyOut" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                  Buy Out
-                </button>
-              </div>
               <div class="flex justify-between items-center">
                 <Link href="/dashboard" class="inline-block bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-2 px-4 rounded">
                   Back to Dashboard
@@ -90,11 +104,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Flash Message -->
-    <div v-if="showFlashMessage" class="fixed bottom-0 left-0 right-0 p-4 bg-green-500 text-white">
-      {{ flashMessage }}
-    </div>
   </AuthenticatedLayout>
 </template>
 
@@ -110,8 +119,12 @@ const props = defineProps({
 
 const showRaffleModal = ref(false);
 const ticketQuantity = ref(1);
-const showFlashMessage = ref(false);
-const flashMessage = ref('');
+const mainImage = ref(`/storage/${props.listing.cover_image_path}`);
+const additionalImages = ref(JSON.parse(props.listing.image_paths || '[]'));
+
+const allImages = computed(() => {
+  return [props.listing.cover_image_path, ...additionalImages.value];
+});
 
 const progressPercentage = computed(() => {
   const soldTickets = props.listing.tickets_sold || 0;
@@ -132,7 +145,15 @@ const maxTickets = computed(() => {
 });
 
 const enterRaffle = () => {
-  showRaffleModal.value = true;
+  Inertia.post(route('listings.raffle-entry.store', props.listing.id), {
+    onSuccess: () => {
+      // Reload the page to fetch the updated listing data
+      Inertia.reload();
+    },
+    onError: (errors) => {
+      // Handle errors, e.g., show a notification
+    }
+  });
 };
 
 const addToCart = () => {
@@ -147,12 +168,6 @@ const addToCart = () => {
     quantity: ticketQuantity.value,
   }, {
     onSuccess: () => {
-      showFlashMessage.value = true;
-      flashMessage.value = `${ticketQuantity.value} ticket(s) added to your cart.`;
-      setTimeout(() => {
-        showFlashMessage.value = false;
-        flashMessage.value = '';
-      }, 3000); // Hide the flash message after 3 seconds
       showRaffleModal.value = false;
     },
     onError: (errors) => {
@@ -184,6 +199,18 @@ const decrementQuantity = () => {
     ticketQuantity.value--;
   }
 };
+
+const setMainImage = (image) => {
+  mainImage.value = `/storage/${image}`;
+};
+
+const soldTickets = computed(() => {
+  return props.listing.tickets_sold;
+});
+
+const potentialTickets = computed(() => {
+  return props.listing.potential_tickets;
+});
 </script>
 
 <style scoped>

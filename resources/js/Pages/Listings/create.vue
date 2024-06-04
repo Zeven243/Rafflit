@@ -57,8 +57,13 @@
           </div>
 
           <div>
-            <label for="image" class="block text-sm font-medium text-gray-700">Image</label>
-            <input type="file" id="image" name="image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" @change="onImageChange">
+            <label for="cover_image" class="block text-sm font-medium text-gray-700">Cover Image</label>
+            <input type="file" id="cover_image" name="cover_image" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" @change="onCoverImageChange">
+          </div>
+
+          <div>
+            <label for="images" class="block text-sm font-medium text-gray-700">Images</label>
+            <input type="file" id="images" name="images" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" multiple @change="onImagesChange">
           </div>
 
           <button type="submit" class="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded">
@@ -116,7 +121,8 @@ const form = useForm({
   company: '',
   full_price: 0,
   amount_of_tickets: 0,
-  image: null,
+  cover_image: null,
+  images: [],
 });
 
 const ticketPrice = computed(() => {
@@ -167,8 +173,12 @@ const createCategory = async () => {
   }
 };
 
-const onImageChange = (event) => {
-  form.image = event.target.files[0];
+const onCoverImageChange = (event) => {
+  form.cover_image = event.target.files[0];
+};
+
+const onImagesChange = (event) => {
+  form.images = Array.from(event.target.files);
 };
 </script>
 

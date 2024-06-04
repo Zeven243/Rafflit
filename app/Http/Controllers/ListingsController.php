@@ -50,7 +50,6 @@ class ListingsController extends Controller
         return $existsInCart;
     }
 
-
     // Fetch only user's listings for the My Listings page
     public function userIndex(Request $request)
     {
@@ -83,17 +82,27 @@ class ListingsController extends Controller
             'company' => 'required|string|max:255',
             'full_price' => 'required|numeric|min:0.01',
             'amount_of_tickets' => 'required|integer|min:1',
-            'image' => 'nullable|image',
+            'cover_image' => 'nullable|image',
+            'images.*' => 'nullable|image',
         ]);
-
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->storeAs('public/listings', $imageName);
-            $imagePath = 'listings/' . $imageName;
+    
+        $coverImagePath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverImage = $request->file('cover_image');
+            $coverImageName = time() . '_cover_' . $coverImage->getClientOriginalName();
+            $coverImage->storeAs('public/listings', $coverImageName);
+            $coverImagePath = 'listings/' . $coverImageName;
         }
-
+    
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->storeAs('public/listings', $imageName);
+                $imagePaths[] = 'listings/' . $imageName;
+            }
+        }
+    
         $listing = Listings::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -103,14 +112,15 @@ class ListingsController extends Controller
             'full_price' => (float) $request->full_price,
             'amount_of_tickets' => (int) $request->amount_of_tickets,
             'ticket_price' => (float) ($request->full_price / $request->amount_of_tickets),
-            'image_path' => $imagePath,
+            'cover_image_path' => $coverImagePath,
+            'image_paths' => json_encode($imagePaths),
         ]);
-
+    
         activity()
             ->causedBy(auth()->user())
             ->performedOn($listing)
             ->log('created');
-
+    
         return redirect()->route('listings.index')->with('success', 'Listing created successfully.');
     }
 
@@ -126,8 +136,6 @@ class ListingsController extends Controller
             'listing' => array_merge($listing->toArray(), ['tickets_sold' => $listing->tickets_sold, 'exists_in_cart' => $listing->exists_in_cart]),
         ]);
     }
-    
-    
 
     /**
      * Show the form for editing the specified resource.
@@ -211,6 +219,7 @@ class ListingsController extends Controller
 
         return response()->json([
             'category' => $category,
+            'message' => 'Category created successfully.',
         ]);
     }
 
@@ -262,7 +271,6 @@ class ListingsController extends Controller
             }
         });
         
-        // Return the updated listing data
         return redirect()->route('listings.show', $listingId)->with('success', 'You have successfully bought out all tickets.');
     }
 }

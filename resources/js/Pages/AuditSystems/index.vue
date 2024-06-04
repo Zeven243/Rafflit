@@ -9,92 +9,75 @@
             <Link href="/user-management" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">Back to User Management</Link>
           </div>
         </div>
-        <div class="mb-4">
-          <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-          <input type="date" id="startDate" v-model="startDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="grid grid-cols-6 gap-6">
+              <div class="col-span-6 sm:col-span-3">
+                <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input type="date" id="startDate" v-model="startDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              <div class="col-span-6 sm:col-span-3">
+                <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                <input type="date" id="endDate" v-model="endDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="mb-4">
-          <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
-          <input type="date" id="endDate" v-model="endDate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Select Columns to Display</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div v-for="column in availableColumns" :key="column.value">
+                <label class="inline-flex items-center">
+                  <input type="checkbox" :value="column.value" v-model="selectedColumns" class="form-checkbox h-5 w-5 text-blue-600">
+                  <span class="ml-2 text-gray-700">{{ column.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto mt-6">
           <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
             <thead class="bg-gray-50">
               <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="log_name" class="mr-2">
-                  Log Name
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="description" class="mr-2">
-                  Description
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="event" class="mr-2">
-                  Event
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="subject_details" class="mr-2">
-                  Subject Details
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="causer_details" class="mr-2">
-                  Causer Details
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="properties" class="mr-2">
-                  Properties
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="batch_uuid" class="mr-2">
-                  Batch UUID
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <input type="checkbox" v-model="selectedColumns" value="created_at" class="mr-2">
-                  Date & Time
+                <th v-for="column in selectedColumns" :key="column" scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {{ getColumnLabel(column) }}
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="audit in filteredAudits" :key="audit.id">
-                <td v-if="selectedColumns.includes('log_name')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.log_name }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('description')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.description }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('event')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.event }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('subject_details')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.subject_type ? `${audit.subject_type.split('\\').pop()} (ID: ${audit.subject_id})` : 'N/A' }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('causer_details')" class="px-6 py-4 whitespace-nowrap">
+              <tr v-for="audit in paginatedAudits" :key="audit.id">
+                <td v-for="column in selectedColumns" :key="column" class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900">
-                    {{ audit.causer ? `${audit.causer.first_name} ${audit.causer.last_name} (ID: ${audit.causer_id})` : 'System' }}
+                    <template v-if="column === 'subject_details'">
+                      {{ audit.subject_type ? `${audit.subject_type.split('\\').pop()} (ID: ${audit.subject_id})` : 'N/A' }}
+                    </template>
+                    <template v-else-if="column === 'causer_details'">
+                      {{ audit.causer ? `${audit.causer.first_name} ${audit.causer.last_name} (ID: ${audit.causer_id})` : 'System' }}
+                    </template>
+                    <template v-else-if="column === 'properties'">
+                      {{ audit.properties ? JSON.stringify(audit.properties, null, 2) : 'None' }}
+                    </template>
+                    <template v-else-if="column === 'created_at'">
+                      {{ new Date(audit.created_at).toLocaleString() }}
+                    </template>
+                    <template v-else>
+                      {{ audit[column] || 'N/A' }}
+                    </template>
                   </div>
-                </td>
-                <td v-if="selectedColumns.includes('properties')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.properties ? JSON.stringify(audit.properties, null, 2) : 'None' }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('batch_uuid')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ audit.batch_uuid || 'N/A' }}</div>
-                </td>
-                <td v-if="selectedColumns.includes('created_at')" class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ new Date(audit.created_at).toLocaleString() }}</div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <Pagination :links="audits.links" />
+        <Pagination :links="audits.links" @paginate="fetchAudits" />
       </div>
     </div>
   </AuthenticatedLayout>
 </template>
 
 <script setup>
-import { defineProps, ref, computed } from 'vue';
+import { defineProps, ref, computed, onMounted } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { Link } from '@inertiajs/vue3';
@@ -103,6 +86,17 @@ import * as XLSX from 'xlsx';
 const props = defineProps({
   audits: Object,
 });
+
+const availableColumns = [
+  { label: 'Log Name', value: 'log_name' },
+  { label: 'Description', value: 'description' },
+  { label: 'Event', value: 'event' },
+  { label: 'Subject Details', value: 'subject_details' },
+  { label: 'Causer Details', value: 'causer_details' },
+  { label: 'Properties', value: 'properties' },
+  { label: 'Batch UUID', value: 'batch_uuid' },
+  { label: 'Date & Time', value: 'created_at' },
+];
 
 const selectedColumns = ref([
   'log_name',
@@ -117,6 +111,7 @@ const selectedColumns = ref([
 
 const startDate = ref('');
 const endDate = ref('');
+const currentPage = ref(1);
 
 const filteredAudits = computed(() => {
   return props.audits.data.filter((audit) => {
@@ -124,15 +119,20 @@ const filteredAudits = computed(() => {
     const start = startDate.value ? new Date(startDate.value) : null;
     const end = endDate.value ? new Date(endDate.value) : null;
 
-    const columnFilter = selectedColumns.value.some((column) => {
-      return audit.hasOwnProperty(column);
-    });
-
-    const dateFilter = (!start || auditDate >= start) && (!end || auditDate <= end);
-
-    return columnFilter && dateFilter;
+    return (!start || auditDate >= start) && (!end || auditDate <= end);
   });
 });
+
+const paginatedAudits = computed(() => {
+  const startIndex = (currentPage.value - 1) * props.audits.per_page;
+  const endIndex = startIndex + props.audits.per_page;
+  return filteredAudits.value.slice(startIndex, endIndex);
+});
+
+const fetchAudits = async (page = 1) => {
+  currentPage.value = page;
+  await axios.get(route('audits.index', { page }));
+};
 
 const exportToExcel = () => {
   const worksheet = XLSX.utils.json_to_sheet(filteredAudits.value);
@@ -140,6 +140,15 @@ const exportToExcel = () => {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Audits');
   XLSX.writeFile(workbook, 'audits.xlsx');
 };
+
+const getColumnLabel = (column) => {
+  const columnObj = availableColumns.find((col) => col.value === column);
+  return columnObj ? columnObj.label : '';
+};
+
+onMounted(() => {
+  fetchAudits();
+});
 </script>
 
 <style>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Search;
 use App\Models\Listings;
 use App\Models\RaffleEntry;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,5 +55,10 @@ class User extends Authenticatable
     public function raffleEntries()
     {
         return $this->hasMany(RaffleEntry::class);
+    }
+
+    public function searches()
+    {
+        return $this->hasMany(Search::class);
     }
 }

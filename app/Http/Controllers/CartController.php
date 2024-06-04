@@ -15,12 +15,13 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cart = Cart::with('items.listing')->where('user_id', auth()->id())->first();
-
+        $cart = Cart::with('items.listing:id,name,ticket_price,amount_of_tickets,cover_image_path')->where('user_id', auth()->id())->first();
+    
         return Inertia::render('Cart/index', [
             'cart' => $cart,
         ]);
     }
+    
 
     public function store(Request $request)
     {
@@ -39,7 +40,9 @@ class CartController extends Controller
 
         $this->updatePotentialTickets($request->listing_id, $request->quantity);
 
-        return redirect()->route('cart.index')->with('success', 'Item added to cart.');
+        // return user to the current page the user is on with flash message 'Item added to cart.'
+        
+        return redirect()->back()->with('success', 'Item added to cart.');
     }
 
     public function update(Request $request, CartItem $cartItem)

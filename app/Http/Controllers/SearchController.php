@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Search;
+use App\Models\Listing;
+use App\Models\Listings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
@@ -118,8 +122,13 @@ class SearchController extends Controller
      */
     public function recentSearches()
     {
-        $recentSearches = Auth::user()->recentSearches()->latest()->take(5)->pluck('query');
-        return response()->json($recentSearches);
+        try {
+            $recentSearches = Auth::user()->searches()->latest()->take(5)->pluck('query');
+            return response()->json($recentSearches);
+        } catch (\Exception $e) {
+            Log::error('Error fetching recent searches: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching recent searches'], 500);
+        }
     }
 
     /**
@@ -129,21 +138,55 @@ class SearchController extends Controller
      */
     public function trendingSearches()
     {
-        // Fetch trending searches (this is just a placeholder, implement your logic)
-        $trendingSearches = ['example search 1', 'example search 2', 'example search 3'];
-        return response()->json($trendingSearches);
+        try {
+            // Fetch the top 3 most searched listing items
+            $trendingSearches = DB::table('searches')
+                ->select('query', DB::raw('count(*) as count'))
+                ->groupBy('query')
+                ->orderByDesc('count')
+                ->limit(3)
+                ->pluck('query')
+                ->toArray();
+
+            return response()->json($trendingSearches);
+        } catch (\Exception $e) {
+            Log::error('Error fetching trending searches: ' . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while fetching trending searches'], 500);
+        }
     }
 
-    /**
-     * Save a search query for the authenticated user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function saveSearch(Request $request)
-    {
-        $request->validate(['query' => 'required|string']);
-        Auth::user()->recentSearches()->create(['query' => $request->query]);
+/**
+ * Save a search query for the authenticated user.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function saveSearch(Request $request)
+{
+    try {
+        $request->validate(['query' => 'required|string|min:3']);
+
+        $user = Auth::user();
+
+        if (!$user) {
+            throw new \Exception('User not authenticated');
+        }
+
+        $query = $request->input('query');
+
+        // Check if the search query is related to an actual item in the listings table
+        $listing = Listings::where('name', 'like', '%' . $query . '%')
+            ->orWhere('description', 'like', '%' . $query . '%')
+            ->first();
+
+        if ($listing) {
+            $user->searches()->create(['query' => $query]);
+        }
+
         return response()->json(['message' => 'Search query saved successfully']);
+    } catch (\Exception $e) {
+        Log::error('Error saving search query: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred while saving the search query'], 500);
     }
+}
 }

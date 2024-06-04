@@ -24,12 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('searches', SearchController::class);
 
     Route::get('/listings', [ListingsController::class, 'userIndex'])->name('listings.index');
-    Route::get('/listings/create', [ListingsController::class, 'create'])->name('listings.create');
-    Route::post('/listings', [ListingsController::class, 'store'])->name('listings.store');
+    Route::get('/listings/create', [ListingsController::class, 'create'])->name('listings.create')->middleware('role:Administrator|Developer-Master');
+    Route::post('/listings', [ListingsController::class, 'store'])->name('listings.store')->middleware('role:Administrator|Developer-Master');
     Route::get('/listings/{listing}', [ListingsController::class, 'show'])->name('listings.show');
-    Route::get('/listings/{listing}/edit', [ListingsController::class, 'edit'])->name('listings.edit');
-    Route::put('/listings/{listing}', [ListingsController::class, 'update'])->name('listings.update');
-    Route::delete('/listings/{listing}', [ListingsController::class, 'destroy'])->name('listings.destroy');
+    Route::get('/listings/{listing}/edit', [ListingsController::class, 'edit'])->name('listings.edit')->middleware('role:Administrator|Developer-Master');
+    Route::put('/listings/{listing}', [ListingsController::class, 'update'])->name('listings.update')->middleware('role:Administrator|Developer-Master');
+    Route::delete('/listings/{listing}', [ListingsController::class, 'destroy'])->name('listings.destroy')->middleware('role:Administrator|Developer-Master');
 
     // Standard User Routes
     Route::middleware(['role:Standard User|Administrator|Developer-Master'])->group(function () {
@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/profile/update-picture', [ProfileController::class, 'updateProfilePicture'])->name('profile.update-picture');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::post('/listings/{listing}/buy-out', [ListingsController::class, 'buyOut'])->name('listings.buy-out');
+        
 
         // Cart Routes
         Route::prefix('cart')->name('cart.')->group(function () {

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -20,6 +20,20 @@ const hasPermission = (permissions) => {
   const userPermissions = props.auth.permissions || [];
   return permissions.some(permission => userPermissions.includes(permission));
 };
+
+const showFlashMessage = ref(true);
+
+const closeFlashMessage = () => {
+  showFlashMessage.value = false;
+};
+
+onMounted(() => {
+  if (props.flash.success || props.flash.error) {
+    setTimeout(() => {
+      showFlashMessage.value = false;
+    }, 3000); // 1 second delay + 2 seconds fade out
+  }
+});
 </script>
 
 <template>
@@ -158,6 +172,23 @@ const hasPermission = (permissions) => {
           </div>
         </div>
       </nav>
+      <!-- Flash Message -->
+      <transition name="fade">
+        <div v-if="showFlashMessage && ($page.props.flash.success || $page.props.flash.error)" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+          <div v-if="$page.props.flash.success" class="bg-green-500 text-white p-4 rounded-md shadow-lg relative">
+            {{ $page.props.flash.success }}
+            <button @click="closeFlashMessage" class="absolute top-1 right-2 text-white">
+              &times;
+            </button>
+          </div>
+          <div v-if="$page.props.flash.error" class="bg-red-500 text-white p-4 rounded-md shadow-lg relative">
+            {{ $page.props.flash.error }}
+            <button @click="closeFlashMessage" class="absolute top-1 right-2 text-white">
+              &times;
+            </button>
+          </div>
+        </div>
+      </transition>
       <!-- Page Heading -->
       <header class="bg-white dark:bg-gray-800 shadow" v-if="$slots.header">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -171,3 +202,12 @@ const hasPermission = (permissions) => {
     </div>
   </div>
 </template>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+</style>

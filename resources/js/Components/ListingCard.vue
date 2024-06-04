@@ -1,6 +1,6 @@
 <template>
   <div v-if="listing" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ease-in-out">
-    <img v-if="listing.image_path" :src="`/storage/${listing.image_path}`" alt="Listing Image" class="w-full h-48 object-cover" @click="goToShowPage">
+    <img v-if="listing.cover_image_path" :src="`/storage/${listing.cover_image_path}`" alt="Listing Cover Image" class="w-full h-48 object-cover" @click="goToShowPage">
     <div class="p-4">
       <h5 class="text-lg font-semibold text-gray-800">{{ listing.name }}</h5>
       <p class="text-gray-600 mt-2">{{ listing.description }}</p>

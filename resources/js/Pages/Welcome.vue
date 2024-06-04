@@ -41,10 +41,6 @@
               <swiper-slide v-for="image in carouselImages" :key="image.id">
                 <div class="relative flex justify-center">
                   <img :src="getImageUrl(image.image_path)" alt="Carousel Image" class="w-full h-96 object-cover rounded-lg shadow-md">
-                  <div class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
-                    <h3 class="text-2xl font-bold">{{ image.title }}</h3>
-                    <p class="text-base">{{ image.description }}</p>
-                  </div>
                 </div>
               </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>

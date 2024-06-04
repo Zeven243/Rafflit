@@ -7,7 +7,7 @@
     <div v-for="(group, groupId) in groupedEntries" :key="groupId" class="bg-white rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300 mb-4">
       <div class="flex flex-col sm:flex-row sm:items-center">
         <!-- Product image -->
-        <img :src="`/storage/${group.listing.image_path}`" alt="Product Image" class="w-16 h-16 object-cover rounded mr-4 mb-4 sm:mb-0">
+        <img :src="`/storage/${group.listing.cover_image_path}`" alt="Product Image" class="w-16 h-16 object-cover rounded mr-4 mb-4 sm:mb-0">
         <div class="flex-1">
           <div class="font-medium text-gray-800">Listing: {{ group.listing.name }}</div>
           <div class="text-sm text-gray-500">Description: {{ group.listing.description }}</div>

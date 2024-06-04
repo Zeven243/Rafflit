@@ -4,7 +4,7 @@
   <AuthenticatedLayout>
     <div class="min-h-screen bg-gray-100 py-5" :class="{ 'overlay-active': isSearchFocused }">
       <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-12 gap-6">
+        <div v-if="!searchPerformed" class="grid grid-cols-12 gap-6">
           <!-- Category Filter Menu -->
           <div class="col-span-12 lg:col-span-2 bg-white rounded-lg shadow-lg p-4 mb-4 lg:mb-0">
             <h3 class="text-lg font-bold mb-4">Filter by Category</h3>
@@ -17,18 +17,14 @@
           </div>
 
           <!-- Main Content Area -->
-          <div :class="{'col-span-12 lg:col-span-8': !searchPerformed, 'col-span-12': searchPerformed}">
+          <div class="col-span-12 lg:col-span-8">
             <!-- Feature Items Carousel -->
-            <div v-if="!searchPerformed" class="mb-8">
+            <div class="mb-8">
               <h2 class="text-2xl font-bold mb-4">Featured Items</h2>
               <swiper :slides-per-view="1" :loop="true" :autoplay="{ delay: 2000 }" :speed="500">
                 <swiper-slide v-for="image in carouselImages" :key="image.id">
                   <div class="relative flex justify-center">
                     <img :src="getImageUrl(image.image_path)" alt="Carousel Image" class="w-full h-96 object-cover rounded-lg shadow-md">
-                    <div class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
-                      <h3 class="text-2xl font-bold">{{ image.title }}</h3>
-                      <p class="text-base">{{ image.description }}</p>
-                    </div>
                   </div>
                 </swiper-slide>
                 <div class="swiper-pagination" slot="pagination"></div>
@@ -41,7 +37,7 @@
             <div class="mb-4">
               <h2 class="text-2xl font-bold mb-4">Search Listings</h2>
               <div class="search-container relative z-10">
-                <div class="flex justify-between items-center mb-4">
+                <form @submit.prevent="handleSearch" class="flex justify-between items-center mb-4">
                   <input
                     type="text"
                     v-model="searchQuery"
@@ -49,42 +45,35 @@
                     class="form-input w-full rounded-lg border-gray-300 shadow-sm p-4"
                     @focus="isSearchFocused = true; showDropdown = true; fetchRecentAndTrendingSearches()"
                     @blur="isSearchFocused = false; hideDropdown()"
-                    @keyup.enter="handleSearch"
                   />
-                  <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4" @click="handleSearch">
+                  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
                     Search
                   </button>
-                </div>
+                </form>
                 <div v-if="showDropdown" class="absolute z-10 w-full bg-white rounded-lg shadow-lg mt-2">
                   <div v-if="recentSearches.length > 0" class="py-2 px-4">
                     <h3 class="text-sm font-semibold mb-2">Recent Searches</h3>
                     <ul>
-                      <li v-for="(search, index) in recentSearches.slice(0, 3)" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded" @click="searchQuery = search; handleSearch()">
-                        {{ search }}
+                      <li v-for="(search, index) in recentSearches" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center" @click="searchQuery = search; handleSearch()">
+                        <i class="fas fa-clock mr-2 text-gray-500"></i>
+                        <span>{{ search }}</span>
                       </li>
                     </ul>
                   </div>
                   <div v-if="trendingSearches.length > 0" class="py-2 px-4 border-t border-gray-200">
-                    <h3 class="text-sm font-semibold mb-2">Trending Searches</h3>
+                    <h3 class="text-sm font-semibold mb-2">Trending Items</h3>
                     <ul>
-                      <li v-for="(search, index) in trendingSearches" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded" @click="searchQuery = search; handleSearch()">
-                        {{ search }}
+                      <li v-for="(search, index) in trendingSearches" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center" @click="searchQuery = search; handleSearch()">
+                        <i class="fas fa-chart-line mr-2 text-green-500"></i>
+                        <span>{{ search }}</span>
                       </li>
                     </ul>
                   </div>
                 </div>
               </div>
-              <h2 v-if="!searchPerformed" class="text-2xl font-bold mb-4">New to Rafflit</h2>
-              <div v-if="!searchPerformed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 py-3">
+              <h2 class="text-2xl font-bold mb-4">New to Rafflit</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 py-3">
                 <div v-for="listing in latestListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
-                  <ListingCard
-                    :listing="listing"
-                    class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
-                  />
-                </div>
-              </div>
-              <div v-if="searchPerformed" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 py-3">
-                <div v-for="listing in filteredListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
                   <ListingCard
                     :listing="listing"
                     class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
@@ -95,7 +84,7 @@
           </div>
 
           <!-- Advertisement or Future Feature Space -->
-          <div v-if="!searchPerformed" class="col-span-12 lg:col-span-2">
+          <div class="col-span-12 lg:col-span-2">
             <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
               <h3 class="text-lg font-bold mb-4">Advertisements</h3>
               <p class="text-base">This space is reserved for advertisements or future features.</p>
@@ -103,6 +92,51 @@
             <div class="bg-white rounded-lg shadow-lg p-4">
               <h3 class="text-lg font-bold mb-4">Featured Products</h3>
               <p class="text-base">Showcase some featured products here.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Layout -->
+        <div v-if="searchPerformed" class="grid grid-cols-12 gap-6">
+          <!-- Search Bar -->
+          <div class="col-span-12">
+            <form @submit.prevent="handleSearch" class="flex justify-between items-center mb-4">
+              <input
+                type="text"
+                v-model="searchQuery"
+                placeholder="Search listings..."
+                class="form-input w-full rounded-lg border-gray-300 shadow-sm p-4"
+                @focus="isSearchFocused = true; showDropdown = true; fetchRecentAndTrendingSearches()"
+                @blur="isSearchFocused = false; hideDropdown()"
+              />
+              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
+                Search
+              </button>
+            </form>
+          </div>
+
+          <!-- Category Filter Menu -->
+          <div class="col-span-12 lg:col-span-2 bg-white rounded-lg shadow-lg p-4 mb-4 lg:mb-0">
+            <h3 class="text-lg font-bold mb-4">Filter by Category</h3>
+            <div v-for="category in categories" :key="category.id" class="mb-2">
+              <label class="inline-flex items-center">
+                <input type="checkbox" :value="category.id" v-model="selectedCategories" class="form-checkbox">
+                <span class="ml-2">{{ category.name }}</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Search Results -->
+          <div class="col-span-12 lg:col-span-10">
+            <h2 class="text-2xl font-bold mb-4">Search Results</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-3">
+
+              <div v-for="listing in filteredListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
+                <ListingCard
+                  :listing="listing"
+                  class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -168,8 +202,16 @@ const toggleCategory = (categoryId) => {
 
 const fetchRecentAndTrendingSearches = async () => {
   try {
-    const recentResponse = await fetch('/api/recent-searches');
-    const trendingResponse = await fetch('/api/trending-searches');
+    const recentResponse = await fetch('/api/recent-searches', {
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    });
+    const trendingResponse = await fetch('/api/trending-searches', {
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      }
+    });
     recentSearches.value = await recentResponse.json();
     trendingSearches.value = await trendingResponse.json();
   } catch (error) {
@@ -177,10 +219,10 @@ const fetchRecentAndTrendingSearches = async () => {
   }
 };
 
-const handleSearch = () => {
-  if (searchQuery.value) {
+const handleSearch = async () => {
+  if (searchQuery.value.trim().length > 2) {
     // Save the search query to the database or perform other actions
-    saveSearchQuery(searchQuery.value);
+    await saveSearchQuery(searchQuery.value);
 
     // Perform search logic here
     searchPerformed.value = true;
@@ -189,10 +231,16 @@ const handleSearch = () => {
 
 const saveSearchQuery = async (query) => {
   try {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (!csrfToken) {
+      throw new Error('CSRF token not found');
+    }
+
     const response = await fetch('/api/save-search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
       },
       body: JSON.stringify({ query }),
     });
