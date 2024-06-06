@@ -39,6 +39,20 @@ onMounted(() => {
 <template>
   <div>
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div class="bg-white">
+        <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center">
+            <div class="text-gray-800">
+              Want to sell your items with us?
+            </div>
+            <div>
+              <Link :href="route('contact')" class="text-blue-500 hover:text-blue-700 font-semibold">
+                Contact Us now
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
       <nav class="bg-gradient-to-r from-blue-500 to-purple-600 border-b border-gray-100 dark:border-gray-700">
         <!-- Primary Navigation Menu -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +61,7 @@ onMounted(() => {
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
                 <Link :href="route('dashboard')">
-                <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
+                  <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
                 </Link>
               </div>
               <!-- Navigation Links -->

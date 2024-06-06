@@ -10,7 +10,12 @@
           <div class="bg-white rounded-lg shadow-lg overflow-hidden" v-for="listing in listings" :key="listing.id">
             <img :src="`/storage/${listing.cover_image_path}`" alt="Listing Cover Image" class="w-full h-48 object-cover">
             <div class="p-5">
-              <h2 class="text-xl font-bold text-gray-800 mb-2">{{ listing.name }}</h2>
+              <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xl font-bold text-gray-800">{{ listing.name }}</h2>
+                <span v-if="!listing.is_active" class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                  Pending
+                </span>
+              </div>
               <p class="text-gray-600 mb-4">{{ listing.description }}</p>
               <div class="flex justify-between items-center">
                 <span class="text-gray-900 font-bold">Full Price: R{{ listing.full_price }}</span>

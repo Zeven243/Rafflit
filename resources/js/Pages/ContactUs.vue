@@ -41,9 +41,9 @@ const submit = () => {
                                     <h2 class="text-2xl font-bold mb-4">Contact Information</h2>
                                     <p class="mb-4">
                                         Rafflit<br>
-                                        123 Raffle Street<br>
+                                        51 Killarney Street, Oakdale, Bellville<br>
                                         Cape Town, South Africa<br>
-                                        Phone: +27 123 456 789<br>
+                                        Phone: +27 069 720 8308<br>
                                         Email: <a href="mailto:info@rafflit.co.za"
                                             class="text-blue-500 hover:underline">info@rafflit.co.za</a>
                                     </p>

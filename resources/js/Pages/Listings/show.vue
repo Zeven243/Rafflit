@@ -37,8 +37,13 @@
                 <div class="bg-blue-500 h-2.5 rounded-l-full absolute" :style="{ width: `${soldTickets * 100 / listing.amount_of_tickets}%` }"></div>
                 <div class="bg-yellow-500 h-2.5 rounded-r-full absolute" :style="{ width: `${potentialTickets * 100 / listing.amount_of_tickets}%`, left: `${soldTickets * 100 / listing.amount_of_tickets}%` }"></div>
               </div>
+              <div v-if="!listing.is_active" class="mt-4">
+                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                  Pending Approval
+                </span>
+              </div>
               <div class="mt-4 flex justify-between items-center">
-                <template v-if="$page.props.auth.user">
+                <template v-if="$page.props.auth.user && listing.is_active">
                   <button
                     v-if="listing.tickets_sold < listing.amount_of_tickets"
                     @click.stop="showRaffleModal = true"

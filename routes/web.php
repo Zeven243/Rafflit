@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/audit-systems', [AuditSystemsController::class, 'index'])->name('audit-systems.index');
         Route::resource('role-management', RoleManagementController::class);
         Route::get('/item-management', [ItemManagementController::class, 'index'])->name('item-management.index');
+        Route::get('/item-management/search', [ItemManagementController::class, 'search'])->name('item-management.search');
         Route::put('/item-management/{listing}/update-status', [ItemManagementController::class, 'updateStatus'])->name('item-management.updateStatus');
         Route::put('/item-management/{listing}/update-shipping-status', [ItemManagementController::class, 'updateShippingStatus'])->name('item-management.updateShippingStatus');
         Route::prefix('carousel-images')->name('carousel-images.')->group(function () {

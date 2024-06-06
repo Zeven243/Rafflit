@@ -20,7 +20,7 @@ class ListingsController extends Controller
     // Fetch all listings for the dashboard
     public function index(Request $request)
     {
-        $listings = Listings::all();
+        $listings = Listings::where('is_active', true)->get();
         $categories = Category::all();
 
         // Fetch potential tickets and existence in cart for each listing
@@ -53,8 +53,11 @@ class ListingsController extends Controller
     // Fetch only user's listings for the My Listings page
     public function userIndex(Request $request)
     {
-        $userListings = $request->user()->listings()->with('category')->get();
-        return Inertia::render('Listings/index', ['listings' => $userListings]);
+        $user = $request->user();
+        $userListings = $user->listings()->with('category')->get();
+        $companyListings = Listings::where('company', $user->company)->with('category')->get();
+        $listings = $userListings->merge($companyListings)->unique('id');
+        return Inertia::render('Listings/index', ['listings' => $listings]);
     }
 
     /**
@@ -152,6 +155,12 @@ private function generateSKU()
      */
     public function show(Listings $listing)
     {
+        $user = auth()->user();
+    
+        if (!$listing->is_active && $listing->user_id !== $user->id) {
+            abort(404);
+        }
+    
         $listing->load('category');
         $listing->exists_in_cart = $this->existsInCart($listing->id);
     
