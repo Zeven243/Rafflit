@@ -25,7 +25,8 @@ return new class extends Migration
             $table->unsignedInteger('tickets_sold')->default(0);
             $table->string('company')->nullable();
             $table->unsignedInteger('potential_tickets')->default(0);
-            $table->boolean('is_active')->default(true);
+            $table->string('SKU')->nullable();
+            $table->boolean('is_active')->default(false); // Set is_active to false by default
             $table->unsignedBigInteger('winner_user_id')->nullable();
             $table->timestamps();
         });

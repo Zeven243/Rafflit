@@ -19,9 +19,10 @@ class RoleController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|unique:roles,name',
             'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role = Role::create(['name' => $validatedData['name']]);
+        $role = Role::create(['name' => $validatedData['name'], 'guard_name' => 'web']);
 
         if ($request->has('permissions')) {
             $permissions = Permission::whereIn('id', $request->input('permissions'))->get();
@@ -36,6 +37,7 @@ class RoleController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|unique:roles,name,' . $role->id,
             'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         $role->update(['name' => $validatedData['name']]);
@@ -44,7 +46,7 @@ class RoleController extends Controller
             $permissions = Permission::whereIn('id', $request->input('permissions'))->get();
             $role->syncPermissions($permissions);
         } else {
-            $role->permissions()->detach();
+            $role->syncPermissions([]);
         }
 
         return response()->json($role);

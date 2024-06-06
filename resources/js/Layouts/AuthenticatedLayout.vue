@@ -47,7 +47,7 @@ onMounted(() => {
               <!-- Logo -->
               <div class="shrink-0 flex items-center">
                 <Link :href="route('dashboard')">
-                  <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
+                <img src="/storage/raffl-logo.png" class="block h-9 w-auto" />
                 </Link>
               </div>
               <!-- Navigation Links -->
@@ -58,7 +58,8 @@ onMounted(() => {
                 <NavLink :href="route('listings.index')" :active="route().current('listings.index')">
                   My Listings
                 </NavLink>
-                <NavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')" :active="route().current('listings.create')">
+                <NavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')"
+                  :active="route().current('listings.create')">
                   Create a Listing
                 </NavLink>
                 <NavLink :href="route('raffle-entries.show')" :active="route().current('raffle-entries.show')">
@@ -69,8 +70,10 @@ onMounted(() => {
             <div class="hidden sm:flex sm:items-center sm:ms-6">
               <!-- Cart Link -->
               <NavLink :href="route('cart.index')" :active="route().current('cart.index')" class="mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 My Cart
               </NavLink>
@@ -136,15 +139,18 @@ onMounted(() => {
             <ResponsiveNavLink :href="route('listings.index')" :active="route().current('listings.index')">
               My Listings
             </ResponsiveNavLink>
-            <ResponsiveNavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')" :active="route().current('listings.create')">
+            <ResponsiveNavLink v-if="hasRole(['Administrator', 'Developer-Master'])" :href="route('listings.create')"
+              :active="route().current('listings.create')">
               Create a Listing
             </ResponsiveNavLink>
             <ResponsiveNavLink :href="route('raffle-entries.show')" :active="route().current('raffle-entries.show')">
               My Raffle Entries
             </ResponsiveNavLink>
             <ResponsiveNavLink :href="route('cart.index')" :active="route().current('cart.index')">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               My Cart
             </ResponsiveNavLink>
@@ -174,7 +180,8 @@ onMounted(() => {
       </nav>
       <!-- Flash Message -->
       <transition name="fade">
-        <div v-if="showFlashMessage && ($page.props.flash.success || $page.props.flash.error)" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+        <div v-if="showFlashMessage && ($page.props.flash.success || $page.props.flash.error)"
+          class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
           <div v-if="$page.props.flash.success" class="bg-green-500 text-white p-4 rounded-md shadow-lg relative">
             {{ $page.props.flash.success }}
             <button @click="closeFlashMessage" class="absolute top-1 right-2 text-white">
@@ -199,15 +206,58 @@ onMounted(() => {
       <main>
         <slot />
       </main>
+      <!-- Footer -->
+      <footer class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 class="text-xl font-semibold mb-4">About Rafflit</h3>
+              <p class="text-sm">Rafflit is a raffle web application that allows users to create and participate in
+                raffles
+                for various items. We provide a platform for sellers to list their items and for buyers to purchase
+                tickets
+                for a chance to win those items.</p>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Quick Links</h3>
+              <ul class="space-y-2">
+                <li>
+                  <Link :href="route('about')" class="text-sm hover:underline">About Us</Link>
+                </li>
+                <li>
+                  <Link :href="route('contact')" class="text-sm hover:underline">Contact Us</Link>
+                </li>
+                <li>
+                  <Link :href="route('terms')" class="text-sm hover:underline">Terms and Conditions</Link>
+                </li>
+                <li>
+                  <Link :href="route('privacy')" class="text-sm hover:underline">Privacy Policy</Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Contact Us</h3>
+              <p class="text-sm">51 Killarney Street, Oakdale, Bellville<br>Cape Town, South Africa<br>Phone: +27 069 720 8308 <br>Email:
+                info@rafflit.co.za</p>
+            </div>
+          </div>
+          <div class="mt-8 border-t border-white pt-8">
+            <p class="text-sm text-center">&copy; {{ new Date().getFullYear() }} Rafflit. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   </div>
 </template>
 
 <style>
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 2s;
 }
-.fade-enter-from, .fade-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

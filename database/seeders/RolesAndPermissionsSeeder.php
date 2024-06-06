@@ -103,15 +103,52 @@ class RolesAndPermissionsSeeder extends Seeder
             'view potential tickets',
         ]);
 
+        $sellerRole = Role::firstOrCreate(['name' => 'Seller']);
+        $sellerRole->givePermissionTo([
+            'view dashboard',
+            'view listings',
+            'create listings',
+            'edit listings',
+            'delete listings',
+            'view profile',
+            'edit profile',
+            'delete profile',
+            'update profile picture',
+            'view categories',
+        ]);
+
+        $buyerRole = Role::firstOrCreate(['name' => 'Buyer']);
+        $buyerRole->givePermissionTo([
+            'view dashboard',
+            'view listings',
+            'view raffle entries',
+            'create raffle entries',
+            'view profile',
+            'edit profile',
+            'delete profile',
+            'update profile picture',
+            'view categories',
+            'buy out listings',
+            'view cart',
+            'add to cart',
+            'remove from cart',
+            'checkout cart',
+            'view potential tickets',
+        ]);
+
         // Create your user and assign the "Developer-Master" role
         $user = User::firstOrCreate(
-            ['email' => 'Hein.Engelbrecht@Rafflit.com'],
+            ['email' => 'Heinrich@Rafflit.co.za'],
             [
-                'first_name' => 'Hein',
+                'first_name' => 'Heinrich',
                 'last_name' => 'Engelbrecht',
                 'password' => Hash::make('Password'),
-                'profile_picture' => null, // Set the profile picture path if available
+                'profile_picture' => null,
+                'user_type' => 'individual',
                 'company' => 'Rafflit',
+                'vat_number' => null,
+                'selling_preference' => 'sell',
+                'shipping_address' => '51 Killarney Street, Oakdale, Bellville, Cape Town, 7530',
             ]
         );
 
@@ -120,6 +157,42 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Assign permissions directly to the user
         $user->givePermissionTo(Permission::all());
+
+        // Create Johan user and assign the "Administrator" role
+        $johanUser = User::firstOrCreate(
+            ['email' => 'Johan@Rafflit.co.za'],
+            [
+                'first_name' => 'Johan',
+                'last_name' => 'Steyn',
+                'password' => Hash::make('Password'),
+                'profile_picture' => null,
+                'user_type' => 'individual',
+                'company' => 'Rafflit',
+                'vat_number' => null,
+                'selling_preference' => 'sell',
+                'shipping_address' => '51 Killarney Street, Oakdale, Bellville, Cape Town, 7530',
+            ]
+        );
+
+        $johanUser->assignRole('Administrator');
+
+        // Create Rene user and assign the "Administrator" role
+        $reneUser = User::firstOrCreate(
+            ['email' => 'Rene@Rafflit.co.za'],
+            [
+                'first_name' => 'Rene',
+                'last_name' => 'Tait-Steyn',
+                'password' => Hash::make('Password'),
+                'profile_picture' => null,
+                'user_type' => 'individual',
+                'company' => 'Rafflit',
+                'vat_number' => null,
+                'selling_preference' => 'sell',
+                'shipping_address' => '51 Killarney Street, Oakdale, Bellville, Cape Town, 7530',
+            ]
+        );
+
+        $reneUser->assignRole('Administrator');
 
         // Reset the permission cache
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();

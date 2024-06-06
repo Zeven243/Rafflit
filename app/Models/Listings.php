@@ -24,7 +24,9 @@ class Listings extends Model
         'tickets_sold',
         'winner_user_id',
         'company',
-        'potential_tickets', 
+        'potential_tickets',
+        'is_active',
+        'SKU',
 
     ];
     

@@ -19,7 +19,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile_picture')->nullable();
-            $table->string('company')->nullable(); // Add company column
+            $table->string('user_type');
+            $table->string('company')->nullable();
+            $table->string('vat_number')->nullable();
+            $table->string('selling_preference');
+            $table->string('shipping_address');
             $table->rememberToken();
             $table->timestamps();
         });

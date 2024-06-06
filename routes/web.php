@@ -14,9 +14,18 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\RaffleEntryController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\TermsController;
+use App\Http\Controllers\PrivacyController;
 
 // Public Routes
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+Route::get('/terms', [TermsController::class, 'index'])->name('terms');
+Route::get('/privacy', [PrivacyController::class, 'index'])->name('privacy');
 
 // Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -43,7 +52,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::post('/listings/{listing}/buy-out', [ListingsController::class, 'buyOut'])->name('listings.buy-out');
         
-
         // Cart Routes
         Route::prefix('cart')->name('cart.')->group(function () {
             Route::get('/', [CartController::class, 'index'])->name('index');
@@ -60,7 +68,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/audit-systems', [AuditSystemsController::class, 'index'])->name('audit-systems.index');
         Route::resource('role-management', RoleManagementController::class);
         Route::get('/item-management', [ItemManagementController::class, 'index'])->name('item-management.index');
+        Route::put('/item-management/{listing}/update-status', [ItemManagementController::class, 'updateStatus'])->name('item-management.updateStatus');
+        Route::put('/item-management/{listing}/update-shipping-status', [ItemManagementController::class, 'updateShippingStatus'])->name('item-management.updateShippingStatus');
         Route::prefix('carousel-images')->name('carousel-images.')->group(function () {
+            Route::get('/', [CarouselImageController::class, 'index'])->name('index');
             Route::post('/', [CarouselImageController::class, 'store'])->name('store');
             Route::delete('/{carouselImage}', [CarouselImageController::class, 'destroy'])->name('destroy');
             Route::post('/{carouselImage}/replace', [CarouselImageController::class, 'replace'])->name('replace');

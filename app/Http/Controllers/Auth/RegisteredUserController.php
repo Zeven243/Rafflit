@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class RegisteredUserController extends Controller
 {
@@ -35,15 +36,26 @@ class RegisteredUserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'profile_picture' => 'nullable|image|max:2048',
-            'company' => 'required|string|max:255', // Add validation for the company field
+            'user_type' => 'required|in:individual,business',
+            'company' => 'required_if:user_type,business|string|max:255',
+            'vat_number' => 'required_if:user_type,business|string|max:255',
+            'selling_preference' => 'required|in:sell,buy',
+            'terms_accepted' => 'required|accepted',
+            'shipping_address' => 'required|string|max:255',
         ]);
-    
+
+        $company = $request->user_type === 'individual' ? $request->first_name . ' ' . $request->last_name : $request->company;
+
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'company' => $request->company, // Include the company field when creating the user
+            'user_type' => $request->user_type,
+            'company' => $company,
+            'vat_number' => $request->user_type === 'business' ? $request->vat_number : null,
+            'selling_preference' => $request->selling_preference,
+            'shipping_address' => $request->shipping_address,
         ]);
 
         if ($request->hasFile('profile_picture')) {
@@ -52,6 +64,12 @@ class RegisteredUserController extends Controller
             $path = $profilePicture->storeAs('public/profile_pictures', $filename);
             $user->profile_picture = $path;
             $user->save();
+        }
+
+        // Assign the "Standard User" role to the newly registered user
+        $standardUserRole = Role::where('name', 'Standard User')->first();
+        if ($standardUserRole) {
+            $user->assignRole($standardUserRole);
         }
 
         event(new Registered($user));

@@ -73,56 +73,79 @@ class ListingsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|max:255',
-            'description' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'company' => 'required|string|max:255',
-            'full_price' => 'required|numeric|min:0.01',
-            'amount_of_tickets' => 'required|integer|min:1',
-            'cover_image' => 'nullable|image',
-            'images.*' => 'nullable|image',
-        ]);
-    
-        $coverImagePath = null;
-        if ($request->hasFile('cover_image')) {
-            $coverImage = $request->file('cover_image');
-            $coverImageName = time() . '_cover_' . $coverImage->getClientOriginalName();
-            $coverImage->storeAs('public/listings', $coverImageName);
-            $coverImagePath = 'listings/' . $coverImageName;
-        }
-    
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $image->storeAs('public/listings', $imageName);
-                $imagePaths[] = 'listings/' . $imageName;
-            }
-        }
-    
-        $listing = Listings::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'user_id' => auth()->user()->id,
-            'company' => $request->company,
-            'full_price' => (float) $request->full_price,
-            'amount_of_tickets' => (int) $request->amount_of_tickets,
-            'ticket_price' => (float) ($request->full_price / $request->amount_of_tickets),
-            'cover_image_path' => $coverImagePath,
-            'image_paths' => json_encode($imagePaths),
-        ]);
-    
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($listing)
-            ->log('created');
-    
-        return redirect()->route('listings.index')->with('success', 'Listing created successfully.');
+/**
+ * Store a newly created resource in storage.
+ */
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|max:255',
+        'description' => 'required|max:255',
+        'category_id' => 'required|exists:categories,id',
+        'company' => 'required|string|max:255',
+        'full_price' => 'required|numeric|min:0.01',
+        'amount_of_tickets' => 'required|integer|min:1',
+        'cover_image' => 'nullable|image',
+        'images.*' => 'nullable|image',
+    ]);
+
+    $coverImagePath = null;
+    if ($request->hasFile('cover_image')) {
+        $coverImage = $request->file('cover_image');
+        $coverImageName = time() . '_cover_' . $coverImage->getClientOriginalName();
+        $coverImage->storeAs('public/listings', $coverImageName);
+        $coverImagePath = 'listings/' . $coverImageName;
     }
+
+    $imagePaths = [];
+    if ($request->hasFile('images')) {
+        foreach ($request->file('images') as $image) {
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->storeAs('public/listings', $imageName);
+            $imagePaths[] = 'listings/' . $imageName;
+        }
+    }
+
+    // Generate a unique SKU number
+    $sku = $this->generateSKU();
+
+    $listing = Listings::create([
+        'name' => $request->name,
+        'description' => $request->description,
+        'category_id' => $request->category_id,
+        'user_id' => auth()->user()->id,
+        'company' => $request->company,
+        'full_price' => (float) $request->full_price,
+        'amount_of_tickets' => (int) $request->amount_of_tickets,
+        'ticket_price' => (float) ($request->full_price / $request->amount_of_tickets),
+        'cover_image_path' => $coverImagePath,
+        'image_paths' => json_encode($imagePaths),
+        'SKU' => $sku,
+        'is_active' => false, // Set is_active to false by default
+    ]);
+
+    activity()
+        ->causedBy(auth()->user())
+        ->performedOn($listing)
+        ->log('created');
+
+    return redirect()->route('listings.index')->with('success', 'Listing created successfully.');
+}
+
+/**
+ * Generate a unique SKU number.
+ *
+ * @return string
+ */
+private function generateSKU()
+{
+    $prefix = 'SKU-';
+    $timestamp = now()->format('YmdHis');
+    $randomNumber = mt_rand(1000, 9999);
+
+    return $prefix . $timestamp . $randomNumber;
+}
+
 
     /**
      * Display the specified resource.

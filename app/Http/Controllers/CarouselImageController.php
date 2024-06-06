@@ -17,11 +17,12 @@ class CarouselImageController extends Controller
      */
     public function index()
     {
-        return CarouselImage::all();
+        $carouselImages = CarouselImage::all();
+        return response()->json($carouselImages);
     }
 
     /**
-     * Store a newly uploaded image.
+     * Store newly uploaded images.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -29,22 +30,21 @@ class CarouselImageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images' => 'required|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('carousel_images', 'public');
-                $imagePaths[] = $path;
+        foreach ($request->file('images') as $image) {
+            $path = $image->store('carousel_images', 'public');
+            $imagePaths[] = $path;
 
-                CarouselImage::create([
-                    'image_path' => $path,
-                ]);
-            }
+            CarouselImage::create([
+                'image_path' => $path,
+            ]);
         }
 
-        return redirect()->route('item-management.index')->with('success', 'Images uploaded successfully.');
+        return redirect()->route('item-management.index')->with('success', 'Carousel images uploaded successfully.');
     }
 
     /**
@@ -74,7 +74,7 @@ class CarouselImageController extends Controller
     public function replace(Request $request, CarouselImage $carouselImage)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Delete the old image file from storage
@@ -89,4 +89,3 @@ class CarouselImageController extends Controller
         return response()->json(['message' => 'Image replaced successfully.']);
     }
 }
-
