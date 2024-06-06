@@ -66,9 +66,20 @@
                         class="w-1/2 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
                     </div>
                   </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <select v-model="filterFields.status"
+                      class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                      <option value="">All</option>
+                      <option value="active">Active Items</option>
+                      <option value="pending">Pending Items</option>
+                      <option value="sold_out">Sold Out Items</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </form>
+
 
             <!-- Listings -->
             <div class="overflow-x-auto">
@@ -229,7 +240,9 @@ const filterFields = ref({
   sku: false,
   minPrice: null,
   maxPrice: null,
+  status: '',
 });
+
 
 const pendingItemsCount = computed(() => {
   return listings.value.filter(listing => !listing.is_active).length;
@@ -244,21 +257,43 @@ const soldOutItemsCount = computed(() => {
 });
 
 const paginatedListings = computed(() => {
-  let filteredListings = listings.value.filter(listing => {
-    const matchesSearch = listing.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-    const matchesCategory = filterFields.value.category === '' || (listing.category && listing.category.id === filterFields.value.category);
-
-    const matchesCompany = filterFields.value.company === '' || listing.company.toLowerCase().includes(filterFields.value.company.toLowerCase());
-
-    const matchesPrice = (filterFields.value.minPrice === null || listing.full_price >= filterFields.value.minPrice) &&
-      (filterFields.value.maxPrice === null || listing.full_price <= filterFields.value.maxPrice);
-
-    return matchesSearch && matchesCategory && matchesCompany && matchesPrice;
-  });
-
   const startIndex = (currentPage.value - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
+
+  let filteredListings = listings.value;
+
+  if (searchQuery.value) {
+    filteredListings = listings.value.filter(listing => {
+      return listing.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    });
+  }
+
+  if (filterFields.value.category) {
+    filteredListings = filteredListings.filter(listing => listing.category && listing.category.id === filterFields.value.category);
+  }
+
+  if (filterFields.value.company) {
+    filteredListings = filteredListings.filter(listing => listing.company.toLowerCase().includes(filterFields.value.company.toLowerCase()));
+  }
+
+  if (filterFields.value.minPrice !== null) {
+    filteredListings = filteredListings.filter(listing => listing.full_price >= filterFields.value.minPrice);
+  }
+
+  if (filterFields.value.maxPrice !== null) {
+    filteredListings = filteredListings.filter(listing => listing.full_price <= filterFields.value.maxPrice);
+  }
+
+  if (filterFields.value.status) {
+    if (filterFields.value.status === 'active') {
+      filteredListings = filteredListings.filter(listing => listing.is_active);
+    } else if (filterFields.value.status === 'pending') {
+      filteredListings = filteredListings.filter(listing => !listing.is_active);
+    } else if (filterFields.value.status === 'sold_out') {
+      filteredListings = filteredListings.filter(listing => listing.tickets_sold === listing.amount_of_tickets);
+    }
+  }
+
   return filteredListings.slice(startIndex, endIndex);
 });
 
