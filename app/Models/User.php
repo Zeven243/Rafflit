@@ -12,6 +12,9 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Messages\MailMessage;
+use App\Notifications\ResetPasswordNotification;
+
 
 class User extends Authenticatable
 {
@@ -86,5 +89,18 @@ class User extends Authenticatable
         } else {
             $this->attributes['vat_number'] = null;
         }
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
+    protected function resetUrl($token)
+    {
+        return url(route('password.reset', [
+            'token' => $token,
+            'email' => $this->getEmailForPasswordReset(),
+        ], false));
     }
 }

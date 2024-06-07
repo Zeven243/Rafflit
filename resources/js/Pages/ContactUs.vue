@@ -19,7 +19,6 @@ const submit = () => {
 </script>
 
 <template>
-
     <Head>
         <title>Contact Us - Rafflit</title>
         <meta name="description"
@@ -44,8 +43,8 @@ const submit = () => {
                                         51 Killarney Street, Oakdale, Bellville<br>
                                         Cape Town, South Africa<br>
                                         Phone: +27 069 720 8308<br>
-                                        Email: <a href="mailto:info@rafflit.co.za"
-                                            class="text-blue-500 hover:underline">info@rafflit.co.za</a>
+                                        Email: <a href="mailto:Support@rafflit.co.za"
+                                            class="text-blue-500 hover:underline">Support@rafflit.co.za</a>
                                     </p>
                                     <p>Our customer support team is available Monday to Friday, from 9:00 AM to 5:00 PM
                                         (SAST).</p>

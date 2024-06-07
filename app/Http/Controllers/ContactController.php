@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ContactFormSubmitted;
+use App\Mail\ContactFormAutoReply;
+use App\Models\SupportTicket;
+use Illuminate\Support\Str;
 
 class ContactController extends Controller
 {
@@ -22,8 +25,22 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        // Send email to support@rafflit.co.za
-        Mail::to('support@rafflit.co.za')->send(new ContactFormSubmitted($request->all()));
+        // Generate a unique ticket number
+        $ticketNumber = SupportTicket::generateTicketNumber();
+
+        // Save the support ticket to the database
+        $supportTicket = SupportTicket::create([
+            'ticket_number' => $ticketNumber,
+            'name' => $request->name,
+            'email' => $request->email,
+            'message' => $request->message,
+        ]);
+
+        // Send email to Support@Rafflit.co.za
+        Mail::to('Support@Rafflit.co.za')->send(new ContactFormSubmitted($request->all(), $ticketNumber));
+
+        // Send auto-reply email to the user
+        Mail::to($request->email)->send(new ContactFormAutoReply($request->all()));
 
         return redirect()->back()->with('success', 'Thank you for contacting us. We will get back to you soon!');
     }

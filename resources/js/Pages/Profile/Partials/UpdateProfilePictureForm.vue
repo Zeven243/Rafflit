@@ -31,7 +31,11 @@ const onFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
         form.profile_picture = file;
-        imageUrl.value = URL.createObjectURL(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imageUrl.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 };
 </script>

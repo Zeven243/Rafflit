@@ -18,6 +18,24 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\TermsController;
 use App\Http\Controllers\PrivacyController;
+use Illuminate\Support\Facades\Mail;
+
+
+// Mail Test Route
+Route::get('/send-email', function () {
+    $data = [
+        'name' => 'Heinrich Engelbrecht',
+        'body' => 'This is a test email from your Laravel application.'
+    ];
+
+    Mail::send('emails.test', $data, function ($message) {
+        $message->to('Heinrich@rafflit.co.za', 'Heinrich')
+            ->subject('Test Email')
+            ->from('noreply@rafflit.co.za', 'Rafflit');
+    });
+
+    return 'Email sent successfully!';
+});
 
 // Public Routes
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
