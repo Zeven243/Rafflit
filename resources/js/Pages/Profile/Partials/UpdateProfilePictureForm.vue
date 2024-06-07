@@ -9,6 +9,8 @@ const form = useForm({
     profile_picture: null,
 });
 
+const imageUrl = ref(null);
+
 // Function to handle the form submission
 const updateProfilePicture = () => {
     const formData = new FormData();
@@ -18,9 +20,19 @@ const updateProfilePicture = () => {
         preserveScroll: true,
         onSuccess: () => {
             form.reset('profile_picture'); // Reset the form field after successful upload
+            imageUrl.value = null; // Reset the image URL
         },
         onError: error => console.error('Error updating profile picture:', error),
     });
+};
+
+// Function to handle file input change
+const onFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        form.profile_picture = file;
+        imageUrl.value = URL.createObjectURL(file);
+    }
 };
 </script>
 
@@ -37,12 +49,12 @@ const updateProfilePicture = () => {
                     id="profile_picture"
                     type="file"
                     class="mt-1 block w-full"
-                    @change="form.profile_picture = $event.target.files[0]"
+                    @change="onFileChange"
                 />
                 <InputError class="mt-2" :message="form.errors.profile_picture" />
             </div>
-            <div class="mt-4" v-if="form.profile_picture">
-                <img :src="URL.createObjectURL(form.profile_picture)" class="w-20 h-20 rounded-full object-cover">
+            <div class="mt-4" v-if="imageUrl">
+                <img :src="imageUrl" class="w-20 h-20 rounded-full object-cover">
             </div>
             <div class="flex items-center gap-4">
                 <PrimaryButton
