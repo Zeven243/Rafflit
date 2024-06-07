@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, defineEmits } from 'vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -75,6 +75,8 @@ const props = defineProps({
   users: Array,
   roles: Array,
 });
+
+const emit = defineEmits(['user-deleted']);
 
 const search = ref('');
 
@@ -105,7 +107,7 @@ const confirmDelete = (user) => {
   if (confirm(`Are you sure you want to delete ${user.first_name}?`)) {
     Inertia.delete(route('user-management.destroy', user.id), {
       onSuccess: () => {
-        props.users = props.users.filter(u => u.id !== user.id);
+        emit('user-deleted', user.id);
       },
       onError: (errors) => {
         console.error(errors);

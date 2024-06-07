@@ -124,7 +124,7 @@ const form = useForm({
   vat_number: '',
   password: '',
   password_confirmation: '',
-  profile_picture: null,
+  profile_picture: '',
   selling_preference: 'sell',
   terms_accepted: '0',
   shipping_address: '',

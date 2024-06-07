@@ -6,7 +6,10 @@ use App\Models\Role;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Listings;
+use App\Models\RaffleEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 
 class UserManagementController extends Controller
@@ -106,22 +109,31 @@ class UserManagementController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
-        $user->delete();
-    
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            // Delete related listings
+            Listings::where('user_id', $user->id)->delete();
+
+            // Delete related raffle entries
+            RaffleEntry::where('user_id', $user->id)->delete();
+
+            // Delete the user
+            $user->delete();
+
+            // Commit the transaction
+            DB::commit();
+        } catch (\Exception $e) {
+            // Rollback the transaction on failure
+            DB::rollBack();
+
+            // Return an error message
+            return redirect()->route('user-management.index')->with('error', 'Failed to delete the user.');
+        }
+
         // Use a 303 response code for the redirect to ensure compatibility with Inertia.js
         return redirect()->route('user-management.index')->with('success', 'User deleted successfully.')->setStatusCode(303);
-    }
-
-    public function updateRole(Request $request, User $user): RedirectResponse
-    {
-        $validated = $request->validate([
-            'role_id' => 'required|exists:roles,id',
-        ]);
-    
-        // Update the user's role in the pivot table
-        $user->roles()->sync([$validated['role_id']]);
-    
-        return redirect()->route('user-management.index')->with('success', 'User role updated successfully.');
     }
 
 }
