@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('user_type');
             $table->string('company')->nullable();
             $table->string('vat_number')->nullable();
+            $table->boolean('terms_accepted')->default(false);
             $table->string('selling_preference');
             $table->string('shipping_address');
             $table->rememberToken();

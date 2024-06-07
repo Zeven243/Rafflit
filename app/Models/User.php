@@ -28,6 +28,7 @@ class User extends Authenticatable
         'vat_number',
         'selling_preference',
         'shipping_address',
+        'terms_accepted',
     ];
 
     protected $hidden = [
@@ -38,6 +39,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'terms_accepted' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -64,5 +66,25 @@ class User extends Authenticatable
     public function searches()
     {
         return $this->hasMany(Search::class);
+    }
+
+    // Accessor for the company attribute
+    public function getCompanyAttribute($value)
+    {
+        if ($this->user_type === 'individual') {
+            return $this->first_name . ' ' . $this->last_name;
+        }
+
+        return $value;
+    }
+
+    // Mutator for the vat_number attribute
+    public function setVatNumberAttribute($value)
+    {
+        if ($this->user_type === 'business') {
+            $this->attributes['vat_number'] = $value;
+        } else {
+            $this->attributes['vat_number'] = null;
+        }
     }
 }

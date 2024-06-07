@@ -37,14 +37,12 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'profile_picture' => 'nullable|image|max:2048',
             'user_type' => 'required|in:individual,business',
-            'company' => 'required_if:user_type,business|string|max:255',
-            'vat_number' => 'required_if:user_type,business|string|max:255',
+            'company' => 'required|string|max:255',
+            'vat_number' => 'required|string|max:255',
             'selling_preference' => 'required|in:sell,buy',
-            'terms_accepted' => 'required|accepted',
+            'terms_accepted' => 'required|in:1',
             'shipping_address' => 'required|string|max:255',
         ]);
-
-        $company = $request->user_type === 'individual' ? $request->first_name . ' ' . $request->last_name : $request->company;
 
         $user = User::create([
             'first_name' => $request->first_name,
@@ -52,10 +50,11 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'user_type' => $request->user_type,
-            'company' => $company,
+            'company' => $request->company,
             'vat_number' => $request->user_type === 'business' ? $request->vat_number : null,
             'selling_preference' => $request->selling_preference,
             'shipping_address' => $request->shipping_address,
+            'terms_accepted' => $request->terms_accepted,
         ]);
 
         if ($request->hasFile('profile_picture')) {
