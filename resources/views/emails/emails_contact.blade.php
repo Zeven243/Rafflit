@@ -19,12 +19,14 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .logo {
-            display: block;
-            margin: 0 auto;
-            max-width: 120px;
+        .header {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 100%;
             height: auto;
-            margin-bottom: 30px;
         }
         h1 {
             color: #333333;
@@ -69,12 +71,15 @@
 </head>
 <body>
     <div class="container">
-        <img src="{{ asset('storage/raffl-logo.png') }}" alt="Rafflit Logo" class="logo">
+        <div class="header">
+            <img src="{{ asset('storage/Support_Ticket.png') }}" alt="Support Ticket">
+        </div>
         <h1>New Support Ticket</h1>
         <p>Hello,</p>
         <p>You have received a new support ticket from the Rafflit website. Here are the details:</p>
         <div class="message">
             <p><strong>Ticket Number:</strong> {{ $ticketNumber }}</p>
+            <p><strong>Subject:</strong> {{ $subject }}</p>
             <p><strong>Name:</strong> {{ $name }}</p>
             <p><strong>Email:</strong> <a href="mailto:{{ $email }}">{{ $email }}</a></p>
             <p><strong>Message:</strong></p>

@@ -19,12 +19,14 @@
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .logo {
-            display: block;
-            margin: 0 auto;
-            max-width: 150px;
+        .header {
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 100%;
             height: auto;
-            margin-bottom: 20px;
         }
         h1 {
             color: #333333;
@@ -48,7 +50,9 @@
 </head>
 <body>
     <div class="container">
-        <img src="{{ asset('storage/raffl-logo.png') }}" alt="Rafflit Logo" class="logo">
+        <div class="header">
+            <img src="{{ asset('storage/Heading.png') }}" alt="Rafflit Heading">
+        </div>
         <h1>Thank You for Contacting Rafflit</h1>
         <p>Dear {{ $name }},</p>
         <p>Thank you for reaching out to us. We appreciate your interest in Rafflit and value your feedback.</p>

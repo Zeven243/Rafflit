@@ -22,6 +22,7 @@ class ContactController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
             'message' => 'required|string',
         ]);
 
@@ -33,6 +34,7 @@ class ContactController extends Controller
             'ticket_number' => $ticketNumber,
             'name' => $request->name,
             'email' => $request->email,
+            'subject' => $request->subject,
             'message' => $request->message,
         ]);
 

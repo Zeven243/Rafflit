@@ -8,6 +8,7 @@ const { props } = usePage();
 const form = useForm({
     name: '',
     email: '',
+    subject: '',
     message: '',
 });
 
@@ -64,6 +65,13 @@ const submit = () => {
                                             <label for="email"
                                                 class="block text-gray-700 text-sm font-bold mb-2">Email</label>
                                             <input type="email" id="email" v-model="form.email"
+                                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                required>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="subject"
+                                                class="block text-gray-700 text-sm font-bold mb-2">Subject</label>
+                                            <input type="text" id="subject" v-model="form.subject"
                                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                                 required>
                                         </div>

@@ -23,7 +23,7 @@ class ContactFormSubmitted extends Mailable
     {
         $this->data = $data;
         $this->ticketNumber = $ticketNumber;
-        $this->subject = "Ticket #{$ticketNumber} - {$data['email']}";
+        $this->subject = "Ticket #{$ticketNumber} - {$data['subject']}";
     }
 
     /**
@@ -32,14 +32,14 @@ class ContactFormSubmitted extends Mailable
     public function build()
     {
         return $this->from('noreply@rafflit.co.za', 'Rafflit')
-                    ->subject("Ticket #{$this->ticketNumber} - {$this->data['email']}")
+                    ->subject("Ticket #{$this->ticketNumber} - {$this->data['subject']}")
                     ->markdown('emails.emails_contact')
                     ->with([
                         'name' => $this->data['name'],
                         'email' => $this->data['email'],
+                        'subject' => $this->data['subject'],
                         'message' => $this->data['message'],
                         'ticketNumber' => $this->ticketNumber,
                     ]);
     }
-
 }

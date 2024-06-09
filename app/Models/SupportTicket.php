@@ -19,6 +19,7 @@ class SupportTicket extends Model
         'ticket_number',
         'name',
         'email',
+        'subject',
         'message',
     ];
 

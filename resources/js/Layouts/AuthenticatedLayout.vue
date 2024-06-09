@@ -252,7 +252,7 @@ onMounted(() => {
             <div>
               <h3 class="text-xl font-semibold mb-4">Contact Us</h3>
               <p class="text-sm">51 Killarney Street, Oakdale, Bellville<br>Cape Town, South Africa<br>Phone: +27 069 720 8308 <br>Email:
-                info@rafflit.co.za</p>
+                Support@rafflit.co.za</p>
             </div>
           </div>
           <div class="mt-8 border-t border-white pt-8">
