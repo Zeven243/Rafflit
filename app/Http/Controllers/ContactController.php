@@ -7,7 +7,7 @@ use Inertia\Inertia;
 use App\Mail\ContactFormSubmitted;
 use App\Mail\ContactFormAutoReply;
 use App\Models\SupportTicket;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -39,11 +39,11 @@ class ContactController extends Controller
 
         // Send email to Support@Rafflit.co.za
         $supportEmail = 'Support@Rafflit.co.za';
-        Notification::route('mail', $supportEmail)->notify(new ContactFormSubmitted($request->all(), $ticketNumber));
+        Mail::to($supportEmail)->send(new ContactFormSubmitted($request->all(), $ticketNumber));
 
         // Send auto-reply email to the user
         $userEmail = $request->email;
-        Notification::route('mail', $userEmail)->notify(new ContactFormAutoReply($request->all()));
+        Mail::to($userEmail)->send(new ContactFormAutoReply($request->all()));
 
         return redirect()->back()->with('success', 'Thank you for contacting us. We will get back to you soon!');
     }
