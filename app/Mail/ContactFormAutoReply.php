@@ -41,7 +41,7 @@ class ContactFormAutoReply extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.contact_auto_reply',
+            markdown: 'emails.contact_auto_reply',
             with: [
                 'name' => $this->name,
             ],

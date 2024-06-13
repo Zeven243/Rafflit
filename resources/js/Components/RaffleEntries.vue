@@ -29,6 +29,9 @@
           <div v-else-if="group.isFull && !group.isWinner" key="loser" class="bg-orange-500 to-orange-700 text-white font-bold py-2 px-4 rounded text-center">
             Better luck next time!
           </div>
+          <div v-else-if="group.isFull && group.listing.delivery_confirmed" key="delivery-confirmed" class="bg-green-500 to-green-700 text-white font-bold py-2 px-4 rounded text-center">
+            Delivery Confirmed
+          </div>
           <div v-else-if="group.isFull" key="winner-name" class="bg-green-500 to-green-700 text-white font-bold py-2 px-4 rounded text-center">
             Winner: {{ getWinnerName(group.listing.id) }}
           </div>

@@ -37,11 +37,7 @@ const { props } = usePage();
                                         businesses and individuals in reaching their goals. With a dedicated team of
                                         professionals, we set out to build a platform that prioritizes user
                                         satisfaction, security, and innovation.</p>
-                                    <p>Over the years, Rafflit has grown to become a trusted name in the online raffle
-                                        industry. We have successfully facilitated numerous raffles, connecting sellers
-                                        with enthusiastic buyers and enabling dreams to come true. Our commitment to
-                                        excellence and continuous improvement drives us to deliver the best possible
-                                        experience for our users.</p>
+
                                 </div>
                                 <div>
                                     <h2 class="text-2xl font-bold mb-4">Our Values</h2>

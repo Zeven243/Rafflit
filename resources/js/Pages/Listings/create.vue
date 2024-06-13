@@ -32,6 +32,16 @@
           </div>
 
           <div>
+            <label for="item_condition" class="block text-sm font-medium text-gray-700">Item Condition</label>
+            <select id="item_condition" v-model="form.item_condition" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+              <option value="" disabled>Select item condition</option>
+              <option value="new">New</option>
+              <option value="pre-loved">Pre-loved</option>
+            </select>
+            <div v-if="form.errors.item_condition" class="text-red-500 text-xs italic">{{ form.errors.item_condition }}</div>
+          </div>
+
+          <div>
             <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
             <select id="company" name="company" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" v-model="form.company">
               <option value="" disabled>Select a company</option>
@@ -123,6 +133,7 @@ const form = useForm({
   amount_of_tickets: 0,
   cover_image: null,
   images: [],
+  item_condition: '',
 });
 
 const ticketPrice = computed(() => {

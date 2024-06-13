@@ -69,15 +69,20 @@
             </div>
           </div>
 
-          <!-- Advertisement or Future Feature Space -->
+          <!-- Advertisement Section -->
           <div v-if="!searchPerformed" class="col-span-12 lg:col-span-2">
-            <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
-              <h3 class="text-lg font-bold mb-4">Advertisements</h3>
-              <p class="text-base">This space is reserved for advertisements or future features.</p>
-            </div>
             <div class="bg-white rounded-lg shadow-lg p-4">
-              <h3 class="text-lg font-bold mb-4">Featured Products</h3>
-              <p class="text-base">Showcase some featured products here.</p>
+              <h3 class="text-lg font-bold mb-4">Advertisements</h3>
+              <div v-for="advertisement in advertisements" :key="advertisement.id" class="mb-4">
+                <a :href="advertisement.url" target="_blank" class="block">
+                  <div class="relative">
+                    <img :src="getAdvertisementImageUrl(advertisement.image_path)" alt="Advertisement" class="w-full rounded-lg shadow-md">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition duration-300">
+                      <span class="text-white font-bold text-lg">Click to Learn More</span>
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -110,8 +115,13 @@ const showDropdown = ref(false);
 const recentSearches = ref([]);
 const trendingSearches = ref([]);
 const searchPerformed = ref(false);
+const advertisements = ref([]);
 
 const getImageUrl = (path) => {
+  return `/storage/${path}`;
+};
+
+const getAdvertisementImageUrl = (path) => {
   return `/storage/${path}`;
 };
 
@@ -173,6 +183,20 @@ const hideDropdown = () => {
     showDropdown.value = false;
   }, 200); // Delay to allow click event to register
 };
+
+const fetchAdvertisements = async () => {
+  try {
+    const response = await axios.get('/api/advertisements');
+    advertisements.value = response.data;
+  } catch (error) {
+    console.error('Error fetching advertisements:', error);
+    alert('Failed to fetch advertisements. Please try again.');
+  }
+};
+
+onMounted(() => {
+  fetchAdvertisements();
+});
 </script>
 
 <style>

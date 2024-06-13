@@ -71,13 +71,12 @@ const { props } = usePage();
                             <div class="mb-8">
                                 <h2 class="text-2xl font-bold mb-4">6. Item Delivery and Shipping</h2>
                                 <ul class="list-disc list-inside mb-4">
-                                    <li>Sellers must deliver or ship their items to our office before the raffle is made
-                                        available on the platform. Sellers are responsible for all shipping/courier fees
-                                        to get the items to our office.</li>
-                                    <li>Once we receive the item, it will be listed for raffle.</li>
-                                    <li>After a winner is declared, we will ship the item to the winner's specified
-                                        shipping address. Buyers/winners are responsible for the shipping fees from our
-                                        office to their address.</li>
+                                    <li>Rafflit is not responsible for the collection or delivering of any items being sold on the site.</li>
+                                    <li>The delivery and/or pickup of items after a winner has been declared is solely between the winner and the seller.</li>
+                                    <li>The winner is responsible for arranging delivery with the seller and/or pickup.</li>
+                                    <li>Winners and sellers will be notified via email if a winner is selected by our system.</li>
+                                    <li>As a security measure towards both parties, we hold the seller's money until the winner has declared that they have received the item by clicking the link in the email sent to them when they win.</li>
+                                    <li>If the winner fails to update us by clicking on the link after 7 days, the seller's money will be paid out to them, after which Rafflit holds no responsibility for the item.</li>
                                 </ul>
                             </div>
 
@@ -85,7 +84,10 @@ const { props } = usePage();
                                 <h2 class="text-2xl font-bold mb-4">7. Winner Notification and Item Delivery</h2>
                                 <ul class="list-disc list-inside mb-4">
                                     <li>Winners will be notified via email.</li>
-                                    <li>Items will be shipped from our office to the winner's shipping address.</li>
+                                    <li>Sellers are responsible for shipping the item directly to the winner's shipping address or arranging pickup with the winner.</li>
+                                    <li>Winners are responsible for providing a valid shipping address and/or arranging pickup.</li>
+                                    <li>Sellers will receive their payment once the winner has declared that they have received the item by clicking the link in the email sent to them when they win.</li>
+                                    <li>If the winner fails to update us by clicking on the link after 7 days, the seller's money will be paid out to them, after which Rafflit holds no responsibility for the item.</li>
                                 </ul>
                             </div>
 

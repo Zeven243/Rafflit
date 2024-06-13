@@ -24,7 +24,8 @@
               <swiper :slides-per-view="1" :loop="true" :autoplay="{ delay: 2000 }" :speed="500">
                 <swiper-slide v-for="image in carouselImages" :key="image.id">
                   <div class="relative flex justify-center">
-                    <img :src="getImageUrl(image.image_path)" alt="Carousel Image" class="w-full h-96 object-cover rounded-lg shadow-md">
+                    <img :src="getImageUrl(image.image_path)" alt="Carousel Image"
+                      class="w-full h-96 object-cover rounded-lg shadow-md">
                   </div>
                 </swiper-slide>
                 <div class="swiper-pagination" slot="pagination"></div>
@@ -38,15 +39,12 @@
               <h2 class="text-2xl font-bold mb-4">Search Listings</h2>
               <div class="search-container relative z-10">
                 <form @submit.prevent="handleSearch" class="flex justify-between items-center mb-4">
-                  <input
-                    type="text"
-                    v-model="searchQuery"
-                    placeholder="Search listings..."
+                  <input type="text" v-model="searchQuery" placeholder="Search listings..."
                     class="form-input w-full rounded-lg border-gray-300 shadow-sm p-4"
                     @focus="isSearchFocused = true; showDropdown = true; fetchRecentAndTrendingSearches()"
-                    @blur="isSearchFocused = false; hideDropdown()"
-                  />
-                  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
+                    @blur="isSearchFocused = false; hideDropdown()" />
+                  <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
                     Search
                   </button>
                 </form>
@@ -54,7 +52,9 @@
                   <div v-if="recentSearches.length > 0" class="py-2 px-4">
                     <h3 class="text-sm font-semibold mb-2">Recent Searches</h3>
                     <ul>
-                      <li v-for="(search, index) in recentSearches" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center" @click="searchQuery = search; handleSearch()">
+                      <li v-for="(search, index) in recentSearches" :key="index"
+                        class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center"
+                        @click="searchQuery = search; handleSearch()">
                         <i class="fas fa-clock mr-2 text-gray-500"></i>
                         <span>{{ search }}</span>
                       </li>
@@ -63,7 +63,9 @@
                   <div v-if="trendingSearches.length > 0" class="py-2 px-4 border-t border-gray-200">
                     <h3 class="text-sm font-semibold mb-2">Trending Items</h3>
                     <ul>
-                      <li v-for="(search, index) in trendingSearches" :key="index" class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center" @click="searchQuery = search; handleSearch()">
+                      <li v-for="(search, index) in trendingSearches" :key="index"
+                        class="cursor-pointer hover:bg-gray-100 py-1 px-2 rounded flex items-center"
+                        @click="searchQuery = search; handleSearch()">
                         <i class="fas fa-chart-line mr-2 text-green-500"></i>
                         <span>{{ search }}</span>
                       </li>
@@ -73,25 +75,29 @@
               </div>
               <h2 class="text-2xl font-bold mb-4">New to Rafflit</h2>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6 py-3">
-                <div v-for="listing in latestListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
-                  <ListingCard
-                    :listing="listing"
-                    class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
-                  />
+                <div v-for="listing in latestListings" :key="listing.id" class="relative group"
+                  @click="goToListing(listing.id)">
+                  <ListingCard :listing="listing"
+                    class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer" />
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Advertisement or Future Feature Space -->
+          <!-- Advertisement Section -->
           <div class="col-span-12 lg:col-span-2">
-            <div class="bg-white rounded-lg shadow-lg p-4 mb-4">
-              <h3 class="text-lg font-bold mb-4">Advertisements</h3>
-              <p class="text-base">This space is reserved for advertisements or future features.</p>
-            </div>
             <div class="bg-white rounded-lg shadow-lg p-4">
-              <h3 class="text-lg font-bold mb-4">Featured Products</h3>
-              <p class="text-base">Showcase some featured products here.</p>
+              <h3 class="text-lg font-bold mb-4">Advertisements</h3>
+              <div v-for="advertisement in advertisements" :key="advertisement.id" class="mb-4">
+                <a :href="advertisement.url" target="_blank" class="block">
+                  <div class="relative">
+                    <img :src="getAdvertisementImageUrl(advertisement.image_path)" alt="Advertisement" class="w-full rounded-lg shadow-md">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition duration-300">
+                      <span class="text-white font-bold text-lg">Click to Learn More</span>
+                    </div>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -101,14 +107,10 @@
           <!-- Search Bar -->
           <div class="col-span-12">
             <form @submit.prevent="handleSearch" class="flex justify-between items-center mb-4">
-              <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Search listings..."
+              <input type="text" v-model="searchQuery" placeholder="Search listings..."
                 class="form-input w-full rounded-lg border-gray-300 shadow-sm p-4"
                 @focus="isSearchFocused = true; showDropdown = true; fetchRecentAndTrendingSearches()"
-                @blur="isSearchFocused = false; hideDropdown()"
-              />
+                @blur="isSearchFocused = false; hideDropdown()" />
               <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4">
                 Search
               </button>
@@ -130,12 +132,10 @@
           <div class="col-span-12 lg:col-span-10">
             <h2 class="text-2xl font-bold mb-4">Search Results</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6 py-3">
-
-              <div v-for="listing in filteredListings" :key="listing.id" class="relative group" @click="goToListing(listing.id)">
-                <ListingCard
-                  :listing="listing"
-                  class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer"
-                />
+              <div v-for="listing in filteredListings" :key="listing.id" class="relative group"
+                @click="goToListing(listing.id)">
+                <ListingCard :listing="listing"
+                  class="transform transition-transform duration-300 ease-in-out group-hover:scale-105 cursor-pointer" />
               </div>
             </div>
           </div>
@@ -144,6 +144,7 @@
     </div>
   </AuthenticatedLayout>
 </template>
+
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -267,4 +268,19 @@ const hideDropdown = () => {
 const goToListing = (id) => {
   router.visit(route('listings.show', id));
 };
+
+const advertisements = ref([]);
+
+const getAdvertisementImageUrl = (path) => {
+  return `/storage/${path}`;
+};
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('/api/advertisements');
+    advertisements.value = response.data;
+  } catch (error) {
+    console.error('Error fetching advertisements:', error);
+  }
+});
 </script>

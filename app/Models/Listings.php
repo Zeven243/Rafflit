@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use DB;
+use App\Models\User;
+use App\Models\Category;
+use App\Models\DeliveryReminder;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -27,10 +30,9 @@ class Listings extends Model
         'potential_tickets',
         'is_active',
         'SKU',
-
+        'delivery_confirmed',
+        'item_condition',
     ];
-    
-    
 
     public function raffleEntries()
     {
@@ -66,7 +68,10 @@ class Listings extends Model
         return $this->hasMany(Variation::class, 'listing_id');
     }
 
-    // Listing.php
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'company', 'company');
+    }
 
     public function existsInCart()
     {
@@ -75,6 +80,13 @@ class Listings extends Model
             ->exists();
     }
 
+    public function winner()
+    {
+        return $this->belongsTo(User::class, 'winner_user_id');
+    }
 
-
+    public function deliveryReminders()
+    {
+        return $this->hasMany(DeliveryReminder::class);
+    }
 }

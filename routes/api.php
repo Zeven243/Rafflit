@@ -6,6 +6,7 @@ use App\Http\Controllers\CarouselImageController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\AdvertisementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get('/carousel-images', [CarouselImageController::class, 'index']);
+Route::get('/advertisements', [AdvertisementController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/recent-searches', [SearchController::class, 'recentSearches']);

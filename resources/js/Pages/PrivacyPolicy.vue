@@ -71,7 +71,7 @@ const { props } = usePage();
                                 <h2 class="text-2xl font-bold mb-4">7. Contact Information</h2>
                                 <p>If you have any questions about this Privacy Policy, please contact us at <a
                                         href="mailto:privacy@rafflit.co.za"
-                                        class="text-blue-500 hover:underline">privacy@rafflit.co.za</a>.</p>
+                                        class="text-blue-500 hover:underline">Support@rafflit.co.za</a>.</p>
                             </div>
                         </div>
                     </div>

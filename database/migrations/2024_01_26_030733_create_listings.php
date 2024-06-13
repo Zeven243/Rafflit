@@ -28,6 +28,8 @@ return new class extends Migration
             $table->string('SKU')->nullable();
             $table->boolean('is_active')->default(false); // Set is_active to false by default
             $table->unsignedBigInteger('winner_user_id')->nullable();
+            $table->boolean('delivery_confirmed')->default(false); // Add delivery_confirmed column
+            $table->string('item_condition')->nullable();
             $table->timestamps();
         });
     }

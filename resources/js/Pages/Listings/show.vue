@@ -20,6 +20,7 @@
               <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ listing.name }}</h1>
               <p class="text-gray-600 mb-4">{{ listing.description }}</p>
               <p class="text-gray-600 mb-4">Sold by: {{ listing.company }}</p>
+              <p class="text-gray-600 mt-2 mb-4"> <b>Item Condition :</b> {{ listing.item_condition }}</p>
               <div class="mb-4">
                 <span class="text-gray-900 font-bold">Category: {{ listing.category.name }}</span>
               </div>

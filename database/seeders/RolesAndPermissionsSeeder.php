@@ -146,6 +146,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'profile_picture' => null,
                 'user_type' => 'business',
                 'company' => 'Rafflit',
+                'phone' => '069 720 8308',
                 'vat_number' => null,
                 'selling_preference' => 'sell',
                 'shipping_address' => '51 Killarney Street, Oakdale, Bellville, Cape Town, 7530',
@@ -167,6 +168,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'password' => Hash::make('Password'),
                 'profile_picture' => null,
                 'user_type' => 'business',
+                'phone' => '069 720 8308',
                 'company' => 'Rafflit',
                 'vat_number' => null,
                 'selling_preference' => 'sell',
@@ -178,13 +180,14 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create Rene user and assign the "Administrator" role
         $reneUser = User::firstOrCreate(
-            ['email' => 'Rene@Rafflit.co.za'],
+            ['email' => 'Admin@Rafflit.co.za'],
             [
                 'first_name' => 'Rene',
                 'last_name' => 'Tait-Steyn',
                 'password' => Hash::make('Password'),
                 'profile_picture' => null,
                 'user_type' => 'business',
+                'phone' => '069 720 8308',
                 'company' => 'Rafflit',
                 'vat_number' => null,
                 'selling_preference' => 'sell',

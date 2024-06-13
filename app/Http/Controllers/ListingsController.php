@@ -90,6 +90,7 @@ public function store(Request $request)
         'amount_of_tickets' => 'required|integer|min:1',
         'cover_image' => 'nullable|image',
         'images.*' => 'nullable|image',
+        'item_condition' => 'required',
     ]);
 
     $coverImagePath = null;
@@ -124,6 +125,7 @@ public function store(Request $request)
         'cover_image_path' => $coverImagePath,
         'image_paths' => json_encode($imagePaths),
         'SKU' => $sku,
+        'item_condition' => $request->item_condition,
         'is_active' => false, // Set is_active to false by default
     ]);
 

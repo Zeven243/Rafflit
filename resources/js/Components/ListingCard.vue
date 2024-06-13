@@ -8,6 +8,9 @@
       <div v-if="isUserListing && !listing.is_active" class="mt-2">
         <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Pending</span>
       </div>
+      <div>
+        <p class="text-gray-600 mt-2 mb-4"> <b>Item Condition :</b> {{ listing.item_condition }}</p>
+      </div>
       <div class="mt-4 flex justify-between items-center">
         <span class="text-gray-900 font-semibold">Price: R{{ pricePerTicket(listing.full_price, listing.amount_of_tickets) }}</span>
       </div>

@@ -33,7 +33,7 @@ class ContactFormSubmitted extends Mailable
     {
         return $this->from('noreply@rafflit.co.za', 'Rafflit')
                     ->subject("Ticket #{$this->ticketNumber} - {$this->data['subject']}")
-                    ->markdown('emails.emails_contact')
+                    ->markdown('emails.contact_form_submitted')
                     ->with([
                         'name' => $this->data['name'],
                         'email' => $this->data['email'],

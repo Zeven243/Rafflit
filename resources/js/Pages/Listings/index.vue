@@ -8,15 +8,18 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div class="bg-white rounded-lg shadow-lg overflow-hidden" v-for="listing in listings" :key="listing.id">
-            <img :src="`/storage/${listing.cover_image_path}`" alt="Listing Cover Image" class="w-full h-48 object-cover">
+            <img :src="`/storage/${listing.cover_image_path}`" alt="Listing Cover Image"
+              class="w-full h-48 object-cover">
             <div class="p-5">
               <div class="flex justify-between items-center mb-2">
                 <h2 class="text-xl font-bold text-gray-800">{{ listing.name }}</h2>
-                <span v-if="!listing.is_active" class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                <span v-if="!listing.is_active"
+                  class="bg-yellow-100 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded">
                   Pending
                 </span>
               </div>
               <p class="text-gray-600 mb-4">{{ listing.description }}</p>
+              <p class="text-gray-600 mt-2 mb-4"> <b>Item Condition :</b> {{ listing.item_condition }}</p>
               <div class="flex justify-between items-center">
                 <span class="text-gray-900 font-bold">Full Price: R{{ listing.full_price }}</span>
                 <span class="text-gray-500">Per Ticket: R{{ listing.ticket_price }}</span>
@@ -25,7 +28,7 @@
                 <span class="text-gray-500">Amount of Tickets: {{ listing.amount_of_tickets }}</span>
                 <Link :href="`/listings/${listing.id}`"
                   class="inline-block bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-2 px-4 rounded">
-                  View Listing
+                View Listing
                 </Link>
               </div>
             </div>

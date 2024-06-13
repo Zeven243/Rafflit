@@ -18,8 +18,8 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\TermsController;
 use App\Http\Controllers\PrivacyController;
+use App\Http\Controllers\AdvertisementController;
 use Illuminate\Support\Facades\Mail;
-
 
 // Mail Test Route
 Route::get('/send-email', function () {
@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/listings/{listing}/raffle-entry', [RaffleEntryController::class, 'storeRaffleEntry'])->name('listings.raffle-entry.store');
         Route::get('/raffle-entries', [RaffleEntryController::class, 'getRaffleEntries'])->name('raffle-entries.index');
         Route::get('/raffle-entries/show', [RaffleEntryController::class, 'showRaffleEntries'])->name('raffle-entries.show');
+        Route::get('/confirm-delivery/{listing}/{winner}', [RaffleEntryController::class, 'confirmDelivery'])->name('confirm-delivery');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -89,6 +90,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/item-management/search', [ItemManagementController::class, 'search'])->name('item-management.search');
         Route::put('/item-management/{listing}/update-status', [ItemManagementController::class, 'updateStatus'])->name('item-management.updateStatus');
         Route::put('/item-management/{listing}/update-shipping-status', [ItemManagementController::class, 'updateShippingStatus'])->name('item-management.updateShippingStatus');
+        Route::post('/item-management/upload-advertisement', [ItemManagementController::class, 'uploadAdvertisement'])->name('item-management.upload-advertisement');
+        Route::delete('/item-management/advertisements/{advertisement}', [ItemManagementController::class, 'destroyAdvertisement'])->name('item-management.destroy-advertisement');
+        Route::post('/item-management/advertisements/{advertisement}/replace', [ItemManagementController::class, 'replaceAdvertisement'])->name('item-management.replace-advertisement');
         Route::prefix('carousel-images')->name('carousel-images.')->group(function () {
             Route::get('/', [CarouselImageController::class, 'index'])->name('index');
             Route::post('/', [CarouselImageController::class, 'store'])->name('store');

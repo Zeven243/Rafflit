@@ -80,7 +80,6 @@
               </div>
             </form>
 
-
             <!-- Listings -->
             <div class="overflow-x-auto">
               <table class="w-full whitespace-no-wrap">
@@ -109,18 +108,19 @@
                     <td class="px-6 py-4 border-t">{{ listing.ticket_price }}</td>
                     <td class="px-6 py-4 border-t">{{ listing.company }}</td>
                     <td class="px-6 py-4 border-t">
-                      <span
-                        :class="['px-2 inline-flex text-xs leading-5 font-semibold rounded-full', listing.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800']">
-                        {{ listing.is_active ? 'Active' : 'Inactive' }}
+                      <span :class="[
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                        listing.amount_of_tickets === listing.tickets_sold
+                          ? 'bg-green-100 text-green-800'
+                          : listing.is_active
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                      ]">
+                        {{ listing.amount_of_tickets === listing.tickets_sold ? 'Completed' : listing.is_active ?
+                        'Active' : 'Inactive' }}
                       </span>
                     </td>
-                    <td class="px-6 py-4 border-t">
-                      <select v-model="listing.shipping_status" @change="updateShippingStatus(listing)">
-                        <option value="pending">To be shipped</option>
-                        <option value="shipped">Out for delivery</option>
-                        <option value="delivered">Delivery completed</option>
-                      </select>
-                    </td>
+                    <td>{{ listing.shipping_status }}</td>
                     <td class="px-6 py-4 border-t">
                       <Link :href="`/listings/${listing.id}/edit`" class="text-indigo-600 hover:text-indigo-900 mr-4">
                       Edit
@@ -137,8 +137,6 @@
               </table>
             </div>
 
-
-
             <!-- Pagination -->
             <div class="mt-8">
               <nav class="flex justify-between">
@@ -152,6 +150,7 @@
                 </button>
               </nav>
             </div>
+
             <!-- Carousel Image Upload Modal -->
             <div class="mt-8">
               <button @click="openModal" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -202,6 +201,110 @@
                 </div>
               </div>
             </div>
+
+            <!-- Advertisement Upload Modal -->
+            <div class="mt-8">
+              <button @click="openAdvertisementModal"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Upload Advertisement
+              </button>
+            </div>
+            <div v-if="showAdvertisementModal" class="fixed z-10 inset-0 overflow-y-auto">
+              <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Modal Background -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                  <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+
+                <!-- Modal Content -->
+                <div
+                  class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                  <form @submit.prevent="uploadAdvertisement">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                      <div>
+                        <label for="advertisement-image" class="block text-sm font-medium text-gray-700">Advertisement
+                          Image</label>
+                        <input type="file" id="advertisement-image" ref="advertisementImage" accept="image/*"
+                          class="mt-1 block w-full" required>
+                      </div>
+                      <div class="mt-4">
+                        <label for="advertisement-url" class="block text-sm font-medium text-gray-700">URL Link</label>
+                        <input type="url" id="advertisement-url" v-model="advertisementUrl" class="mt-1 block w-full"
+                          required>
+                      </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                      <button type="submit"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Upload
+                      </button>
+                      <button type="button" @click="closeAdvertisementModal"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+
+                  <!-- Display uploaded advertisements -->
+                  <div class="mt-4">
+                    <h4 class="text-lg font-bold mb-2">Uploaded Advertisements</h4>
+                    <div v-for="advertisement in advertisements" :key="advertisement.id" class="flex items-center mb-4">
+                      <img :src="getAdvertisementImageUrl(advertisement.image_path)" alt="Advertisement"
+                        class="w-20 h-20 object-cover rounded mr-4">
+                      <div>
+                        <a :href="advertisement.url" target="_blank" class="text-blue-500 hover:underline">{{
+                          advertisement.url }}</a>
+                        <button @click="deleteAdvertisement(advertisement.id)"
+                          class="text-red-500 hover:text-red-700 ml-4">Delete</button>
+                        <button @click="openReplaceAdvertisementModal(advertisement)"
+                          class="text-blue-500 hover:text-blue-700 ml-4">Replace</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Replace Advertisement Modal -->
+            <div v-if="showReplaceAdvertisementModal" class="fixed z-10 inset-0 overflow-y-auto">
+              <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Modal Background -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                  <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+
+                <!-- Modal Content -->
+                <div
+                  class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                  <form @submit.prevent="replaceAdvertisement">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                      <div>
+                        <label for="replace-advertisement-image" class="block text-sm font-medium text-gray-700">Replace
+                          Advertisement Image</label>
+                        <input type="file" id="replace-advertisement-image" ref="replaceAdvertisementImage"
+                          accept="image/*" class="mt-1 block w-full" required>
+                      </div>
+                      <div class="mt-4">
+                        <label for="replace-advertisement-url" class="block text-sm font-medium text-gray-700">Replace
+                          URL Link</label>
+                        <input type="url" id="replace-advertisement-url" v-model="replaceAdvertisementUrl"
+                          class="mt-1 block w-full" required>
+                      </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                      <button type="submit"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Replace
+                      </button>
+                      <button type="button" @click="closeReplaceAdvertisementModal"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -219,10 +322,12 @@ import axios from 'axios';
 const props = defineProps({
   listings: Array,
   categories: Array,
+  advertisements: Array,
 });
 
 const listings = ref(props.listings);
 const categories = ref(props.categories);
+const advertisements = ref(props.advertisements);
 const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = 10;
@@ -243,10 +348,12 @@ const filterFields = ref({
   status: '',
 });
 
-
 const pendingItemsCount = computed(() => {
-  return listings.value.filter(listing => !listing.is_active).length;
+  return listings.value.filter(listing => 
+    !listing.is_active && listing.amount_of_tickets !== listing.tickets_sold
+  ).length;
 });
+
 
 const activeItemsCount = computed(() => {
   return listings.value.filter(listing => listing.is_active).length;
@@ -297,7 +404,6 @@ const paginatedListings = computed(() => {
   return filteredListings.slice(startIndex, endIndex);
 });
 
-
 const totalPages = computed(() => {
   return Math.ceil(listings.value.length / itemsPerPage);
 });
@@ -314,8 +420,6 @@ const toggleActivation = async (listing) => {
     console.error('Error updating listing status:', error);
   }
 };
-
-
 
 const deleteListing = async (id) => {
   if (confirm('Are you sure you want to delete this listing?')) {
@@ -404,7 +508,97 @@ const toggleFilterDropdown = () => {
   showFilterDropdown.value = !showFilterDropdown.value;
 };
 
+const showAdvertisementModal = ref(false);
+const advertisementImage = ref(null);
+const advertisementUrl = ref('');
+const showReplaceAdvertisementModal = ref(false);
+const selectedAdvertisement = ref(null);
+const replaceAdvertisementUrl = ref('');
+
+const openAdvertisementModal = () => {
+  showAdvertisementModal.value = true;
+};
+
+const closeAdvertisementModal = () => {
+  showAdvertisementModal.value = false;
+  advertisementImage.value = null;
+  advertisementUrl.value = '';
+};
+
+const uploadAdvertisement = async () => {
+  const formData = new FormData();
+  formData.append('image', advertisementImage.value.files[0]);
+  formData.append('url', advertisementUrl.value);
+
+  try {
+    await axios.post('/item-management/upload-advertisement', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    closeAdvertisementModal();
+    fetchAdvertisements();
+    alert('Advertisement uploaded successfully!');
+  } catch (error) {
+    console.error('Error uploading advertisement:', error);
+    alert('Failed to upload advertisement. Please check the file format and try again.');
+  }
+};
+
+const getAdvertisementImageUrl = (path) => {
+  return `/storage/${path}`;
+};
+
+const deleteAdvertisement = async (id) => {
+  try {
+    await axios.delete(`/item-management/advertisements/${id}`);
+    advertisements.value = advertisements.value.filter(advertisement => advertisement.id !== id);
+  } catch (error) {
+    console.error('Error deleting advertisement:', error);
+  }
+};
+
+const openReplaceAdvertisementModal = (advertisement) => {
+  selectedAdvertisement.value = advertisement;
+  replaceAdvertisementUrl.value = advertisement.url;
+  showReplaceAdvertisementModal.value = true;
+};
+
+const closeReplaceAdvertisementModal = () => {
+  selectedAdvertisement.value = null;
+  replaceAdvertisementUrl.value = '';
+  showReplaceAdvertisementModal.value = false;
+};
+
+const replaceAdvertisement = async () => {
+  const formData = new FormData();
+  formData.append('image', replaceAdvertisementImage.value.files[0]);
+  formData.append('url', replaceAdvertisementUrl.value);
+
+  try {
+    await axios.post(`/item-management/advertisements/${selectedAdvertisement.value.id}/replace`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    closeReplaceAdvertisementModal();
+    fetchAdvertisements();
+  } catch (error) {
+    console.error('Error replacing advertisement:', error);
+  }
+};
+
+const fetchAdvertisements = async () => {
+  try {
+    const response = await axios.get('/api/advertisements');
+    advertisements.value = response.data;
+  } catch (error) {
+    console.error('Error fetching advertisements:', error);
+  }
+};
+
 onMounted(() => {
   fetchCarouselImages();
+  fetchAdvertisements();
 });
 </script>

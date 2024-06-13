@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Search;
 use App\Models\Listings;
 use App\Models\RaffleEntry;
+use App\Models\DeliveryReminder;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
@@ -14,7 +15,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\ResetPasswordNotification;
-
 
 class User extends Authenticatable
 {
@@ -32,6 +32,7 @@ class User extends Authenticatable
         'selling_preference',
         'shipping_address',
         'terms_accepted',
+        'phone',
     ];
 
     protected $hidden = [
@@ -102,5 +103,10 @@ class User extends Authenticatable
             'token' => $token,
             'email' => $this->getEmailForPasswordReset(),
         ], false));
+    }
+
+    public function deliveryReminders()
+    {
+        return $this->hasMany(DeliveryReminder::class);
     }
 }

@@ -25,6 +25,11 @@
           <div v-if="form.errors.email" class="text-red-500 text-xs italic">{{ form.errors.email }}</div>
         </div>
         <div>
+          <label for="phone" class="block text-sm font-medium text-gray-700" >Contact Number</label>
+          <input type="text" id="phone" v-model="form.phone" required 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+        </div>
+        <div>
           <label for="shipping_address" class="block text-sm font-medium text-gray-700">Shipping Address</label>
           <input type="text" id="shipping_address" v-model="form.shipping_address" required
             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
@@ -128,6 +133,7 @@ const form = useForm({
   selling_preference: 'sell',
   terms_accepted: '0',
   shipping_address: '',
+  phone: '',
 });
 
 const showTermsModal = ref(false);
